@@ -3,11 +3,262 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Pizza Place</title>
+    <title>Luali Pizza</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #fff;
+            color: #111;
+            font-family: 'Lato', sans-serif;
+            font-weight: 300;
+        }
+
+        /* HERO */
+        header {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px 20px;
+            border-bottom: 1px solid #111;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '🍕';
+            position: absolute;
+            font-size: 400px;
+            opacity: 0.04;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        .tagline-top {
+            font-size: 0.75rem;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+            opacity: 0;
+            animation: fadeUp 0.8s ease forwards 0.2s;
+        }
+
+        .logo {
+            max-width: 400px;
+            width: 80%;
+            opacity: 0;
+            animation: fadeUp 0.8s ease forwards 0.4s;
+        }
+
+        .locations {
+            margin-top: 32px;
+            font-size: 0.8rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            opacity: 0;
+            animation: fadeUp 0.8s ease forwards 0.6s;
+        }
+
+        .locations span {
+            margin: 0 12px;
+        }
+
+        .divider {
+            display: inline-block;
+            opacity: 0.4;
+        }
+
+        /* HOURS BAND */
+        .hours-band {
+            background: #111;
+            color: #fff;
+            text-align: center;
+            padding: 28px 20px;
+            font-size: 0.75rem;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+        }
+
+        .hours-band strong {
+            font-weight: 400;
+            margin: 0 8px;
+        }
+
+        /* MENU */
+        .menu-section {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 100px 40px;
+        }
+
+        .section-label {
+            font-size: 0.7rem;
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            margin-bottom: 60px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #111;
+        }
+
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 28px 0;
+            border-bottom: 1px solid #eee;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .menu-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .menu-item-name {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(28px, 5vw, 42px);
+            font-weight: 700;
+        }
+
+        .menu-item-desc {
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            opacity: 0.5;
+            margin-top: 4px;
+        }
+
+        /* ORDER / CONTACT */
+        .contact-section {
+            background: #111;
+            color: #fff;
+            text-align: center;
+            padding: 100px 40px;
+        }
+
+        .contact-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(36px, 7vw, 80px);
+            font-weight: 900;
+            margin-bottom: 16px;
+        }
+
+        .contact-section p {
+            font-size: 0.8rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            opacity: 0.5;
+            margin-bottom: 40px;
+        }
+
+        .phone-link {
+            display: inline-block;
+            color: #fff;
+            text-decoration: none;
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(24px, 5vw, 48px);
+            font-weight: 400;
+            font-style: italic;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+            padding-bottom: 8px;
+            transition: border-color 0.3s ease;
+        }
+
+        .phone-link:hover {
+            border-color: #fff;
+        }
+
+        /* FOOTER */
+        footer {
+            text-align: center;
+            padding: 32px;
+            font-size: 0.7rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            opacity: 0.4;
+            border-top: 1px solid #eee;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to My Pizza Place</h1>
-    <p>The best pizza in town!</p>
-    <p>Call us: 555-1234</p>
+
+    <!-- HERO -->
+    <header>
+        <p class="tagline-top">Authentic · Handmade · Fresh</p>
+        <img src="logo.png" alt="Luali Pizza" class="logo">
+        <div class="locations">
+            <span>Chelmsford</span>
+            <span class="divider">—</span>
+            <span>Braintree</span>
+        </div>
+    </header>
+
+    <!-- HOURS -->
+    <div class="hours-band">
+        We're open <strong>Friday & Saturday</strong> evenings <strong>5pm – 9pm</strong>
+    </div>
+
+    <!-- MENU -->
+    <section class="menu-section">
+        <div class="section-label">Our Menu</div>
+
+        <div class="menu-item">
+            <div>
+                <div class="menu-item-name">Margherita</div>
+                <div class="menu-item-desc">Tomato · Mozzarella · Basil</div>
+            </div>
+        </div>
+
+        <div class="menu-item">
+            <div>
+                <div class="menu-item-name">Pepperoni</div>
+                <div class="menu-item-desc">Tomato · Mozzarella · Pepperoni</div>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- CONTACT -->
+    <section class="contact-section">
+        <h2>Order Now</h2>
+        <p>Give us a call to place your order</p>
+        <a href="tel:07301573944" class="phone-link">07301 573 944</a>
+    </section>
+
+    <footer>
+        &copy; 2025 Luali Pizza · Chelmsford & Braintree
+    </footer>
+
+    <script>
+        // Scroll reveal for menu items
+        const items = document.querySelectorAll('.menu-item');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, i) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => entry.target.classList.add('visible'), i * 150);
+                }
+            });
+        }, { threshold: 0.1 });
+        items.forEach(item => observer.observe(item));
+    </script>
+
 </body>
 </html>
+
