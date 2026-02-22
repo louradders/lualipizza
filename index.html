@@ -7,10 +7,42 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Lato:wght@300;400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            padding: 20px;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid #eee;
+        }
+
+        nav a {
+            color: #111;
+            text-decoration: none;
+            font-size: 0.75rem;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            transition: opacity 0.3s ease;
+        }
+
+        nav a:hover {
+            opacity: 0.4;
         }
 
         body {
@@ -197,7 +229,67 @@
             border-color: #fff;
         }
 
-        /* FOOTER */
+        /* SOCIAL WIDGET */
+        .social-widget {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 999;
+            background: #fff;
+            border: 1px solid #111;
+            padding: 20px 24px;
+            max-width: 220px;
+            transform: translateY(120px);
+            opacity: 0;
+            transition: transform 0.5s ease, opacity 0.5s ease;
+            box-shadow: 4px 4px 0px #111;
+        }
+
+        .social-widget.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .social-widget-close {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            opacity: 0.4;
+            background: none;
+            border: none;
+            font-family: 'Lato', sans-serif;
+            transition: opacity 0.3s ease;
+        }
+
+        .social-widget-close:hover {
+            opacity: 1;
+        }
+
+        .social-widget p {
+            font-size: 0.7rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            line-height: 1.6;
+        }
+
+        .social-widget-icons {
+            display: flex;
+            gap: 16px;
+        }
+
+        .social-widget-icons a {
+            color: #111;
+            font-size: 20px;
+            text-decoration: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .social-widget-icons a:hover {
+            opacity: 0.4;
+        }
         footer {
             text-align: center;
             padding: 32px;
@@ -215,6 +307,12 @@
     </style>
 </head>
 <body>
+
+    <!-- NAV -->
+    <nav>
+        <a href="#menu">Menu</a>
+        <a href="#order">Order Now</a>
+    </nav>
 
     <!-- HERO -->
     <header>
@@ -239,7 +337,7 @@
     </div>
 
     <!-- MENU -->
-    <section class="menu-section">
+    <section class="menu-section" id="menu">
         <div class="section-label">Our Menu</div>
 
         <div class="menu-item">
@@ -259,7 +357,7 @@
     </section>
 
     <!-- CONTACT -->
-    <section class="contact-section">
+    <section class="contact-section" id="order">
         <h2>Order Now</h2>
         <p>Give us a call to place your order</p>
         <a href="tel:07301573944" class="phone-link">07301 573 944</a>
@@ -268,6 +366,17 @@
     <footer>
         &copy; 2025 Luali Pizza · Chelmsford & Braintree
     </footer>
+
+    <!-- SOCIAL WIDGET -->
+    <div class="social-widget" id="socialWidget">
+        <button class="social-widget-close" onclick="closeWidget()">✕</button>
+        <p>Follow us for specials & updates</p>
+        <div class="social-widget-icons">
+            <a href="https://instagram.com/lualipizza" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="https://facebook.com/lualipizza" target="_blank" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+            <a href="https://tiktok.com/@lualipizza" target="_blank" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+        </div>
+    </div>
 
     <script>
         // Scroll reveal for menu items
@@ -280,9 +389,19 @@
             });
         }, { threshold: 0.1 });
         items.forEach(item => observer.observe(item));
+
+        // Social widget - show after 4 seconds
+        setTimeout(() => {
+            document.getElementById('socialWidget').classList.add('show');
+        }, 4000);
+
+        function closeWidget() {
+            document.getElementById('socialWidget').classList.remove('show');
+        }
     </script>
 
 </body>
 </html>
+
 
 
