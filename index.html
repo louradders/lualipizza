@@ -32,6 +32,10 @@
             border-bottom: 1px solid #eee;
         }
 
+        @media (max-width: 400px) {
+            nav { gap: 20px; padding: 16px; }
+        }
+
         nav a {
             color: #111;
             text-decoration: none;
@@ -132,7 +136,27 @@
             margin: 0 8px;
         }
 
-        /* MENU */
+        .menu-item:hover .menu-item-name {
+            opacity: 0.6;
+            transition: opacity 0.3s ease;
+        }
+
+        /* ABOUT */
+        .about-section {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 80px 40px 0;
+            text-align: center;
+        }
+
+        .about-section p {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(18px, 3vw, 26px);
+            font-weight: 400;
+            font-style: italic;
+            line-height: 1.7;
+            opacity: 0.75;
+        }
         .menu-section {
             max-width: 700px;
             margin: 0 auto;
@@ -325,6 +349,11 @@
         We're open <strong>Friday & Saturday</strong> evenings <strong>5pm – 9pm</strong>
     </div>
 
+    <!-- ABOUT -->
+    <div class="about-section">
+        <p>Wood-fired pizzas made from scratch, popping up every Friday and Saturday evening across Essex. Simple ingredients, proper dough, no shortcuts.</p>
+    </div>
+
     <!-- MENU -->
     <section class="menu-section" id="menu">
         <div class="section-label">Our Menu</div>
@@ -374,7 +403,7 @@
     </section>
 
     <footer>
-        &copy; 2025 Luali Pizza · Chelmsford & Braintree
+        &copy; 2026 Luali Pizza · Chelmsford & Braintree
     </footer>
 
     <!-- SOCIAL WIDGET -->
@@ -400,10 +429,10 @@
         }, { threshold: 0.1 });
         items.forEach(item => observer.observe(item));
 
-        // Social widget - show after 4 seconds
+        // Social widget - show after 8 seconds
         setTimeout(() => {
             document.getElementById('socialWidget').classList.add('show');
-        }, 4000);
+        }, 8000);
 
         function closeWidget() {
             document.getElementById('socialWidget').classList.remove('show');
@@ -412,6 +441,3 @@
 
 </body>
 </html>
-
-
-
