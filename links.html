@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luali Pizza</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #0a0a0a;
+            color: #fff;
+            font-family: 'Lato', sans-serif;
+            font-weight: 300;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Subtle radial glow behind logo */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 30%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .wrapper {
+            width: 100%;
+            max-width: 380px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+        }
+
+        .logo-wrap {
+            margin-bottom: 36px;
+            opacity: 0;
+            animation: fadeUp 0.7s ease forwards 0.1s;
+        }
+
+        .logo-wrap img {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+        }
+
+        .tagline {
+            font-size: 0.68rem;
+            letter-spacing: 0.45em;
+            text-transform: uppercase;
+            opacity: 0.4;
+            margin-bottom: 48px;
+            opacity: 0;
+            animation: fadeUp 0.7s ease forwards 0.25s;
+        }
+
+        /* override the double opacity */
+        .tagline { opacity: 0; }
+        .tagline.anim { opacity: 1; }
+
+        .links {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .link-btn {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            width: 100%;
+            padding: 20px 24px;
+            text-decoration: none;
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.04);
+            transition: background 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
+            opacity: 0;
+            transform: translateY(16px);
+            cursor: pointer;
+        }
+
+        .link-btn:nth-child(1) { animation: fadeUp 0.6s ease forwards 0.35s; }
+        .link-btn:nth-child(2) { animation: fadeUp 0.6s ease forwards 0.48s; }
+        .link-btn:nth-child(3) { animation: fadeUp 0.6s ease forwards 0.61s; }
+        .link-btn:nth-child(4) { animation: fadeUp 0.6s ease forwards 0.74s; }
+
+        .link-btn:hover {
+            background: rgba(255,255,255,0.09);
+            border-color: rgba(255,255,255,0.35);
+            transform: translateY(-2px);
+        }
+
+        .link-btn:active {
+            transform: translateY(0px);
+        }
+
+        .link-icon {
+            font-size: 20px;
+            width: 28px;
+            text-align: center;
+            flex-shrink: 0;
+            opacity: 0.75;
+        }
+
+        .link-text {
+            flex: 1;
+        }
+
+        .link-text strong {
+            display: block;
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+            margin-bottom: 2px;
+        }
+
+        .link-text span {
+            font-size: 0.68rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            opacity: 0.4;
+        }
+
+        .link-arrow {
+            opacity: 0.25;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        /* Menu button — slightly distinct */
+        .link-btn.menu-btn {
+            border-color: rgba(255,255,255,0.25);
+            background: rgba(255,255,255,0.07);
+        }
+
+        .footer-note {
+            margin-top: 48px;
+            font-size: 0.65rem;
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            opacity: 0.2;
+            text-align: center;
+            opacity: 0;
+            animation: fadeUp 0.6s ease forwards 1s;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+
+    <div class="logo-wrap">
+        <img src="logo.png" alt="Luali Pizza">
+    </div>
+
+    <p class="tagline" style="opacity:0;animation:fadeUp 0.7s ease forwards 0.25s;">Authentic · Handmade · Fresh</p>
+
+    <div class="links">
+
+        <a href="index.html#menu" class="link-btn menu-btn">
+            <span class="link-icon"><i class="fas fa-pizza-slice"></i></span>
+            <div class="link-text">
+                <strong>Our Menu</strong>
+                <span>See what we're making</span>
+            </div>
+            <span class="link-arrow"><i class="fas fa-arrow-right"></i></span>
+        </a>
+
+        <a href="https://instagram.com/lualipizza" target="_blank" class="link-btn">
+            <span class="link-icon"><i class="fab fa-instagram"></i></span>
+            <div class="link-text">
+                <strong>Instagram</strong>
+                <span>@lualipizza</span>
+            </div>
+            <span class="link-arrow"><i class="fas fa-arrow-right"></i></span>
+        </a>
+
+        <a href="https://tiktok.com/@lualipizza" target="_blank" class="link-btn">
+            <span class="link-icon"><i class="fab fa-tiktok"></i></span>
+            <div class="link-text">
+                <strong>TikTok</strong>
+                <span>@lualipizza</span>
+            </div>
+            <span class="link-arrow"><i class="fas fa-arrow-right"></i></span>
+        </a>
+
+        <a href="https://facebook.com/lualipizza" target="_blank" class="link-btn">
+            <span class="link-icon"><i class="fab fa-facebook"></i></span>
+            <div class="link-text">
+                <strong>Facebook</strong>
+                <span>Luali Pizza</span>
+            </div>
+            <span class="link-arrow"><i class="fas fa-arrow-right"></i></span>
+        </a>
+
+    </div>
+
+    <p class="footer-note">Chelmsford &amp; Braintree &nbsp;·&nbsp; Fri &amp; Sat 5pm–9pm</p>
+
+</div>
+
+</body>
+</html>
