@@ -58,13 +58,12 @@
 
         /* HERO */
         header {
-            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 40px 20px;
+            padding: 100px 20px 60px;
             border-bottom: 1px solid #111;
             position: relative;
             overflow: hidden;
@@ -74,20 +73,20 @@
             font-size: 0.75rem;
             letter-spacing: 0.4em;
             text-transform: uppercase;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             opacity: 0;
             animation: fadeUp 0.8s ease forwards 0.2s;
         }
 
         .logo {
-            max-width: 400px;
-            width: 80%;
+            max-width: 280px;
+            width: 65%;
             opacity: 0;
             animation: fadeUp 0.8s ease forwards 0.4s;
         }
 
         .locations {
-            margin-top: 32px;
+            margin-top: 20px;
             font-size: 0.8rem;
             letter-spacing: 0.3em;
             text-transform: uppercase;
@@ -105,7 +104,7 @@
         }
 
         .social-links {
-            margin-top: 36px;
+            margin-top: 24px;
             opacity: 0;
             animation: fadeUp 0.8s ease forwards 0.8s;
         }
@@ -200,6 +199,16 @@
             text-transform: uppercase;
             opacity: 0.5;
             margin-top: 4px;
+        }
+
+        .menu-item-price {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(22px, 4vw, 32px);
+            font-weight: 400;
+            font-style: italic;
+            opacity: 0.6;
+            flex-shrink: 0;
+            margin-left: 20px;
         }
 
         /* ORDER / CONTACT */
@@ -363,6 +372,7 @@
                 <div class="menu-item-name">Margherita</div>
                 <div class="menu-item-desc">Tomato · Mozzarella · Basil</div>
             </div>
+            <div class="menu-item-price">£9</div>
         </div>
 
         <div class="menu-item">
@@ -370,28 +380,32 @@
                 <div class="menu-item-name">Pepperoni</div>
                 <div class="menu-item-desc">Tomato · Mozzarella · Pepperoni</div>
             </div>
+            <div class="menu-item-price">£11</div>
         </div>
 
         <div class="menu-item">
-    <div>
-        <div class="menu-item-name">Calabrese</div>
-        <div class="menu-item-desc">Tomato · Mozzarella · Nduja · Salami - Red Chillies</div>
-    </div>
-</div>
+            <div>
+                <div class="menu-item-name">Calabrese</div>
+                <div class="menu-item-desc">Tomato · Mozzarella · Nduja · Salami - Red Chillies</div>
+            </div>
+            <div class="menu-item-price">£12</div>
+        </div>
 
-<div class="menu-item">
-    <div>
-        <div class="menu-item-name">The Vegetarian</div>
-        <div class="menu-item-desc">Tomato · Mozzarella · Pepper · Onion · Mushroom</div>
-    </div>
-</div>
+        <div class="menu-item">
+            <div>
+                <div class="menu-item-name">The Vegetarian</div>
+                <div class="menu-item-desc">Tomato · Mozzarella · Pepper · Onion · Mushroom</div>
+            </div>
+            <div class="menu-item-price">£10</div>
+        </div>
 
-<div class="menu-item">
-    <div>
-        <div class="menu-item-name">Ham & Mushroom</div>
-        <div class="menu-item-desc">Tomato · Mozzarella · Ham · Mushroom</div>
-    </div>
-</div>
+        <div class="menu-item">
+            <div>
+                <div class="menu-item-name">Ham & Mushroom</div>
+                <div class="menu-item-desc">Tomato · Mozzarella · Ham · Mushroom</div>
+            </div>
+            <div class="menu-item-price">£11</div>
+        </div>
 
     </section>
 
