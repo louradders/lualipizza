@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Private Events – Luali Pizza</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        html { scroll-behavior: smooth; }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #fff;
+            color: #111;
+            font-family: 'Lato', sans-serif;
+            font-weight: 300;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            padding: 20px;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid #eee;
+        }
+
+        @media (max-width: 400px) {
+            nav { gap: 20px; padding: 16px; }
+        }
+
+        nav a {
+            color: #111;
+            text-decoration: none;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            transition: opacity 0.3s ease;
+        }
+
+        nav a:hover { opacity: 0.4; }
+
+        /* HERO */
+        header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 140px 20px 80px;
+            border-bottom: 1px solid #111;
+        }
+
+        header p {
+            font-size: 0.75rem;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: fadeUp 0.8s ease forwards 0.2s;
+        }
+
+        header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(36px, 8vw, 90px);
+            font-weight: 900;
+            line-height: 1.05;
+            opacity: 0;
+            animation: fadeUp 0.8s ease forwards 0.4s;
+        }
+
+        header .sub {
+            font-size: 0.8rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            opacity: 0;
+            margin-top: 24px;
+            animation: fadeUp 0.8s ease forwards 0.6s;
+            font-weight: 300;
+        }
+
+        /* FORM SECTION */
+        .form-section {
+            max-width: 660px;
+            margin: 0 auto;
+            padding: 80px 40px 100px;
+        }
+
+        .section-label {
+            font-size: 0.7rem;
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            margin-bottom: 48px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #111;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px 40px;
+        }
+
+        @media (max-width: 560px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .form-section { padding: 60px 24px 80px; }
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .field.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 0.65rem;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        input,
+        textarea {
+            font-family: 'Lato', sans-serif;
+            font-weight: 300;
+            font-size: 1rem;
+            color: #111;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid #bbb;
+            padding: 8px 0;
+            outline: none;
+            transition: border-color 0.3s ease;
+            width: 100%;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-bottom-color: #111;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            opacity: 0.35;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .submit-wrap {
+            grid-column: 1 / -1;
+            margin-top: 16px;
+        }
+
+        button[type="submit"] {
+            font-family: 'Lato', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            color: #fff;
+            background: #111;
+            border: none;
+            padding: 18px 48px;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            opacity: 0.7;
+        }
+
+        .success-msg {
+            display: none;
+            margin-top: 32px;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            font-style: italic;
+            opacity: 0.7;
+        }
+
+        footer {
+            text-align: center;
+            padding: 32px;
+            font-size: 0.7rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            opacity: 0.4;
+            border-top: 1px solid #eee;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html#menu">Menu</a>
+        <a href="index.html#order">Order Now</a>
+        <a href="contact.html">Private Events</a>
+    </nav>
+
+    <header>
+        <p>Luali Pizza</p>
+        <h1>Private Events</h1>
+        <p class="sub">Catering enquiries &amp; bookings</p>
+    </header>
+
+    <section class="form-section">
+        <div class="section-label">Tell us about your event</div>
+
+        <!-- Replace YOUR_FORM_ID with your Formspree form ID after signing up at formspree.io -->
+        <form id="enquiryForm" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+            <input type="hidden" name="_replyto" value="lualipizza@gmail.com">
+
+            <div class="form-grid">
+
+                <div class="field">
+                    <label for="name">Your Name</label>
+                    <input type="text" id="name" name="name" placeholder="Jane Smith" required>
+                </div>
+
+                <div class="field">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="jane@example.com" required>
+                </div>
+
+                <div class="field">
+                    <label for="guests">Number of Guests</label>
+                    <input type="number" id="guests" name="guests" placeholder="e.g. 50" min="1" required>
+                </div>
+
+                <div class="field">
+                    <label for="date">Event Date</label>
+                    <input type="date" id="date" name="date" required>
+                </div>
+
+                <div class="field">
+                    <label for="time">Start Time</label>
+                    <input type="time" id="time" name="time" required>
+                </div>
+
+                <div class="field">
+                    <label for="venue">Venue / Location</label>
+                    <input type="text" id="venue" name="venue" placeholder="e.g. The Barn, Chelmsford" required>
+                </div>
+
+                <div class="field full">
+                    <label for="dietary">Dietary Requirements</label>
+                    <textarea id="dietary" name="dietary" placeholder="e.g. 5 vegetarian, 2 gluten-free, nut allergy…"></textarea>
+                </div>
+
+                <div class="field full">
+                    <label for="message">Anything else we should know?</label>
+                    <textarea id="message" name="message" placeholder="Any other details about your event…"></textarea>
+                </div>
+
+                <div class="submit-wrap">
+                    <button type="submit">Send Enquiry</button>
+                </div>
+
+            </div>
+        </form>
+
+        <p class="success-msg" id="successMsg">Thank you — we'll be in touch shortly.</p>
+    </section>
+
+    <footer>
+        &copy; 2026 Luali Pizza · Chelmsford &amp; Braintree
+    </footer>
+
+    <script>
+        const form = document.getElementById('enquiryForm');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = new FormData(form);
+            const res = await fetch(form.action, {
+                method: 'POST',
+                body: data,
+                headers: { 'Accept': 'application/json' }
+            });
+            if (res.ok) {
+                form.style.display = 'none';
+                document.getElementById('successMsg').style.display = 'block';
+            } else {
+                alert('Something went wrong — please email us directly at lualipizza@gmail.com');
+            }
+        });
+    </script>
+
+</body>
+</html>
