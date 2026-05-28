@@ -11,8 +11,8 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            background: #F8F5F0;
-            color: #111;
+            background: #0f0f0f;
+            color: #fff;
             font-family: 'Lato', sans-serif;
             font-weight: 300;
         }
@@ -25,15 +25,15 @@
             justify-content: center;
             gap: 40px;
             padding: 20px;
-            background: rgba(248,245,240,0.97);
+            background: rgba(15,15,15,0.97);
             backdrop-filter: blur(8px);
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid #2a2a2a;
         }
 
         @media (max-width: 400px) { nav { gap: 16px; padding: 16px; } }
 
         nav a {
-            color: #111;
+            color: #fff;
             text-decoration: none;
             font-size: 0.75rem;
             font-weight: 700;
@@ -124,7 +124,7 @@
             text-transform: uppercase;
             margin-bottom: 60px;
             padding-bottom: 20px;
-            border-bottom: 1px solid #111;
+            border-bottom: 1px solid #444;
         }
 
         .step { margin-bottom: 64px; }
@@ -163,7 +163,7 @@
             border: none;
             cursor: pointer;
             font-size: 1.1rem;
-            color: #111;
+            color: #fff;
             padding: 6px 10px;
             opacity: 0.4;
             transition: opacity 0.2s;
@@ -207,14 +207,14 @@
         .cal-day.available {
             cursor: pointer;
             font-weight: 700;
-            border: 1px solid #111;
+            border: 1px solid #fff;
             transition: background 0.15s, color 0.15s;
         }
 
         .cal-day.available:hover,
         .cal-day.available.selected {
-            background: #111;
-            color: #fff;
+            background: #fff;
+            color: #111;
         }
 
         #slotStep, #detailStep { display: none; }
@@ -229,18 +229,18 @@
 
         .slot-btn {
             background: none;
-            border: 1px solid #ddd;
+            border: 1px solid #444;
             padding: 11px 4px;
             font-family: 'Lato', sans-serif;
             font-size: 0.75rem;
             letter-spacing: 0.05em;
             cursor: pointer;
             transition: all 0.15s;
-            color: #111;
+            color: #fff;
         }
 
-        .slot-btn:hover:not(:disabled) { border-color: #111; }
-        .slot-btn.selected { background: #111; color: #fff; border-color: #111; }
+        .slot-btn:hover:not(:disabled) { border-color: #fff; }
+        .slot-btn.selected { background: #fff; color: #111; border-color: #fff; }
 
         .slot-btn:disabled {
             opacity: 0.25;
@@ -249,7 +249,7 @@
         }
 
         .booking-summary {
-            background: #EDE9E3;
+            background: #1a1a1a;
             padding: 18px 22px;
             margin-bottom: 36px;
             font-size: 0.75rem;
@@ -283,17 +283,17 @@
             font-family: 'Lato', sans-serif;
             font-weight: 300;
             font-size: 1rem;
-            color: #111;
+            color: #fff;
             background: transparent;
             border: none;
-            border-bottom: 1px solid #bbb;
+            border-bottom: 1px solid #555;
             padding: 8px 0;
             outline: none;
             transition: border-color 0.3s ease;
             width: 100%;
         }
 
-        input:focus, textarea:focus { border-bottom-color: #111; }
+        input:focus, textarea:focus { border-bottom-color: #fff; }
         input::placeholder, textarea::placeholder { opacity: 0.35; }
         textarea { resize: vertical; min-height: 80px; }
 
@@ -302,10 +302,10 @@
             align-items: center;
             justify-content: space-between;
             padding: 14px 0;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid #2a2a2a;
         }
 
-        .pizza-row:first-child { border-top: 1px solid #eee; }
+        .pizza-row:first-child { border-top: 1px solid #2a2a2a; }
 
         .pizza-name {
             font-family: 'Playfair Display', serif;
@@ -316,7 +316,7 @@
             font-size: 0.7rem;
             letter-spacing: 0.1em;
             text-transform: uppercase;
-            color: #888;
+            color: #aaa;
             font-weight: 400;
             margin-top: 3px;
         }
@@ -330,7 +330,7 @@
 
         .qty-btn {
             background: none;
-            border: 1px solid #ddd;
+            border: 1px solid #444;
             width: 30px;
             height: 30px;
             cursor: pointer;
@@ -338,12 +338,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #111;
+            color: #fff;
             line-height: 1;
             transition: border-color 0.2s;
         }
 
-        .qty-btn:hover { border-color: #111; }
+        .qty-btn:hover { border-color: #fff; }
 
         .qty-num {
             font-family: 'Playfair Display', serif;
@@ -358,14 +358,14 @@
             font-size: 0.75rem;
             letter-spacing: 0.2em;
             text-transform: uppercase;
-            color: #888;
+            color: #aaa;
         }
 
         .order-total strong {
             font-family: 'Playfair Display', serif;
             font-size: 1.2rem;
             font-style: italic;
-            color: #111;
+            color: #fff;
         }
 
         .submit-wrap {
@@ -379,8 +379,8 @@
             font-weight: 700;
             letter-spacing: 0.4em;
             text-transform: uppercase;
-            color: #fff;
-            background: #111;
+            color: #111;
+            background: #fff;
             border: none;
             padding: 18px 48px;
             cursor: pointer;
@@ -420,7 +420,7 @@
             letter-spacing: 0.3em;
             text-transform: uppercase;
             opacity: 0.4;
-            border-top: 1px solid #eee;
+            border-top: 1px solid #2a2a2a;
         }
 
         @keyframes fadeUp {
