@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pre-Order – Luali Pizza</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        html { scroll-behavior: smooth; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #fff;
+            color: #111;
+            font-family: 'Lato', sans-serif;
+            font-weight: 300;
+        }
+
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            padding: 20px;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid #eee;
+        }
+
+        @media (max-width: 400px) { nav { gap: 16px; padding: 16px; } }
+
+        nav a {
+            color: #111;
+            text-decoration: none;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            transition: opacity 0.3s ease;
+        }
+
+        nav a:hover { opacity: 0.4; }
+
+        header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 140px 20px 80px;
+            border-bottom: 1px solid #111;
+        }
+
+        header p.eyebrow {
+            font-size: 0.75rem;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: fadeUp 0.8s ease forwards 0.2s;
+        }
+
+        header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(36px, 8vw, 90px);
+            font-weight: 900;
+            line-height: 1.05;
+            opacity: 0;
+            animation: fadeUp 0.8s ease forwards 0.4s;
+        }
+
+        header .sub {
+            font-size: 0.8rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            margin-top: 24px;
+            opacity: 0;
+            animation: fadeUp 0.8s ease forwards 0.6s;
+        }
+
+        .location-band {
+            background: #111;
+            color: #fff;
+            text-align: center;
+            padding: 32px 20px;
+        }
+
+        .location-band .lbl {
+            font-size: 0.65rem;
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            opacity: 0.5;
+            margin-bottom: 10px;
+        }
+
+        .location-band .address {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(20px, 3.5vw, 32px);
+            font-style: italic;
+        }
+
+        .location-band .note {
+            font-size: 0.7rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            opacity: 0.45;
+            margin-top: 8px;
+        }
+
+        .booking-section {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 80px 40px 120px;
+        }
+
+        @media (max-width: 560px) { .booking-section { padding: 60px 24px 80px; } }
+
+        .section-label {
+            font-size: 0.7rem;
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            margin-bottom: 60px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #111;
+        }
+
+        .step { margin-bottom: 64px; }
+
+        .step-header {
+            display: flex;
+            align-items: baseline;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .step-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            font-style: italic;
+            opacity: 0.18;
+            line-height: 1;
+        }
+
+        .step-title {
+            font-size: 0.7rem;
+            letter-spacing: 0.45em;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .cal-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .cal-nav button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: #111;
+            padding: 6px 10px;
+            opacity: 0.4;
+            transition: opacity 0.2s;
+        }
+
+        .cal-nav button:hover { opacity: 1; }
+
+        .cal-month {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.25rem;
+            font-style: italic;
+        }
+
+        .cal-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 3px;
+        }
+
+        .cal-day-label {
+            text-align: center;
+            font-size: 0.58rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            opacity: 0.35;
+            padding: 6px 0 10px;
+        }
+
+        .cal-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            border-radius: 2px;
+        }
+
+        .cal-day.past { opacity: 0.15; }
+        .cal-day.unavailable { opacity: 0.2; }
+
+        .cal-day.available {
+            cursor: pointer;
+            font-weight: 700;
+            border: 1px solid #111;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        .cal-day.available:hover,
+        .cal-day.available.selected {
+            background: #111;
+            color: #fff;
+        }
+
+        #slotStep, #detailStep { display: none; }
+
+        .slots-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        @media (max-width: 420px) { .slots-grid { grid-template-columns: repeat(3, 1fr); } }
+
+        .slot-btn {
+            background: none;
+            border: 1px solid #ddd;
+            padding: 11px 4px;
+            font-family: 'Lato', sans-serif;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.15s;
+            color: #111;
+        }
+
+        .slot-btn:hover:not(:disabled) { border-color: #111; }
+        .slot-btn.selected { background: #111; color: #fff; border-color: #111; }
+
+        .slot-btn:disabled {
+            opacity: 0.25;
+            cursor: default;
+            text-decoration: line-through;
+        }
+
+        .booking-summary {
+            background: #f5f5f5;
+            padding: 18px 22px;
+            margin-bottom: 36px;
+            font-size: 0.75rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            line-height: 1.8;
+        }
+
+        .booking-summary strong { font-weight: 700; }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px 40px;
+        }
+
+        @media (max-width: 500px) { .form-grid { grid-template-columns: 1fr; } }
+
+        .field { display: flex; flex-direction: column; }
+        .field.full { grid-column: 1 / -1; }
+
+        label {
+            font-size: 0.65rem;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        input, textarea {
+            font-family: 'Lato', sans-serif;
+            font-weight: 300;
+            font-size: 1rem;
+            color: #111;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid #bbb;
+            padding: 8px 0;
+            outline: none;
+            transition: border-color 0.3s ease;
+            width: 100%;
+        }
+
+        input:focus, textarea:focus { border-bottom-color: #111; }
+        input::placeholder, textarea::placeholder { opacity: 0.35; }
+        textarea { resize: vertical; min-height: 80px; }
+
+        .pizza-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .pizza-row:first-child { border-top: 1px solid #eee; }
+
+        .pizza-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+        }
+
+        .pizza-meta {
+            font-size: 0.7rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            opacity: 0.45;
+            margin-top: 3px;
+        }
+
+        .qty-control {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-shrink: 0;
+        }
+
+        .qty-btn {
+            background: none;
+            border: 1px solid #ddd;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #111;
+            line-height: 1;
+            transition: border-color 0.2s;
+        }
+
+        .qty-btn:hover { border-color: #111; }
+
+        .qty-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        .order-total {
+            margin-top: 16px;
+            text-align: right;
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            opacity: 0.5;
+        }
+
+        .order-total strong {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            font-style: italic;
+            color: #111;
+        }
+
+        .submit-wrap {
+            grid-column: 1 / -1;
+            margin-top: 16px;
+        }
+
+        button[type="submit"] {
+            font-family: 'Lato', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            color: #fff;
+            background: #111;
+            border: none;
+            padding: 18px 48px;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        button[type="submit"]:hover { opacity: 0.7; }
+        button[type="submit"]:disabled { opacity: 0.4; cursor: default; }
+
+        .success-section {
+            display: none;
+            text-align: center;
+            padding: 80px 40px 120px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .success-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(32px, 6vw, 60px);
+            font-weight: 900;
+            margin-bottom: 20px;
+        }
+
+        .success-section p {
+            font-size: 0.8rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            opacity: 0.55;
+            line-height: 1.9;
+        }
+
+        footer {
+            text-align: center;
+            padding: 32px;
+            font-size: 0.7rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            opacity: 0.4;
+            border-top: 1px solid #eee;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html#menu">Menu</a>
+        <a href="preorder.html">Pre-Order</a>
+        <a href="contact.html">Private Events</a>
+    </nav>
+
+    <header>
+        <p class="eyebrow">Luali Pizza</p>
+        <h1>Pre-Order</h1>
+        <p class="sub">Skip the queue — reserve your slot</p>
+    </header>
+
+    <div class="location-band">
+        <div class="lbl">Next Pop-Up</div>
+        <div class="address" id="locationAddress"></div>
+        <div class="note" id="locationNote"></div>
+    </div>
+
+    <section class="booking-section" id="bookingSection">
+        <div class="section-label">Reserve your pizza</div>
+
+        <div class="step" id="dateStep">
+            <div class="step-header">
+                <span class="step-num">01</span>
+                <span class="step-title">Choose a date</span>
+            </div>
+            <div class="cal-nav">
+                <button type="button" onclick="changeMonth(-1)" aria-label="Previous month">&#8592;</button>
+                <span class="cal-month" id="calMonth"></span>
+                <button type="button" onclick="changeMonth(1)" aria-label="Next month">&#8594;</button>
+            </div>
+            <div class="cal-grid" id="calGrid"></div>
+        </div>
+
+        <div class="step" id="slotStep">
+            <div class="step-header">
+                <span class="step-num">02</span>
+                <span class="step-title">Choose a time</span>
+            </div>
+            <div class="slots-grid" id="slotsGrid"></div>
+        </div>
+
+        <div class="step" id="detailStep">
+            <div class="step-header">
+                <span class="step-num">03</span>
+                <span class="step-title">Your order</span>
+            </div>
+
+            <div class="booking-summary" id="bookingSummary"></div>
+
+            <form id="preorderForm" novalidate>
+                <div class="form-grid">
+                    <div class="field">
+                        <label for="custName">Your Name</label>
+                        <input type="text" id="custName" name="name" placeholder="Jane Smith" required>
+                    </div>
+                    <div class="field">
+                        <label for="custPhone">Phone Number</label>
+                        <input type="tel" id="custPhone" name="phone" placeholder="07xxx xxxxxx" required>
+                    </div>
+                    <div class="field full">
+                        <label>Pizzas</label>
+                        <div id="pizzaList"></div>
+                        <div class="order-total" id="orderTotal"></div>
+                    </div>
+                    <div class="field full">
+                        <label for="custNotes">Dietary requirements / notes</label>
+                        <textarea id="custNotes" name="notes" placeholder="e.g. gluten-free base, extra chilli…"></textarea>
+                    </div>
+                    <div class="submit-wrap">
+                        <button type="submit" id="submitBtn">Confirm Pre-Order</button>
+                    </div>
+                </div>
+                <input type="hidden" name="date"          id="hiddenDate">
+                <input type="hidden" name="time_slot"     id="hiddenSlot">
+                <input type="hidden" name="location"      id="hiddenLocation">
+                <input type="hidden" name="order_summary" id="hiddenOrder">
+                <input type="hidden" name="_subject"      value="New Luali Pizza Pre-Order!">
+            </form>
+        </div>
+    </section>
+
+    <section class="success-section" id="successSection">
+        <h2>You're all set!</h2>
+        <p>Your slot is reserved.<br>See you at the pop-up — we'll have your order ready.</p>
+    </section>
+
+    <footer>&copy; 2026 Luali Pizza · Chelmsford &amp; Braintree</footer>
+
+    <script>
+    // ================================================================
+    //  LUALI PIZZA — PRE-ORDER CONFIG
+    //  Edit only this block to update location, dates & slots.
+    // ================================================================
+    const CONFIG = {
+
+        // ── WHERE YOU'LL BE ──────────────────────────────────────────
+        location:     "Victoria Road Car Park, Chelmsford",
+        locationNote: "Look for the blue van",
+
+        // ── DATES YOU'RE TRADING (YYYY-MM-DD) ───────────────────────
+        // Add or remove dates — only these show as bookable on the calendar.
+        availableDates: [
+            "2026-05-29",
+            "2026-05-30",
+            "2026-06-05",
+            "2026-06-06",
+            "2026-06-12",
+            "2026-06-13",
+        ],
+
+        // ── TIME SLOTS ───────────────────────────────────────────────
+        slots: [
+            "5:00pm", "5:15pm", "5:30pm", "5:45pm",
+            "6:00pm", "6:15pm", "6:30pm", "6:45pm",
+            "7:00pm", "7:15pm", "7:30pm", "7:45pm",
+            "8:00pm", "8:15pm", "8:30pm", "8:45pm",
+        ],
+
+        // ── MARK SLOTS AS FULL ───────────────────────────────────────
+        // Grey out specific slots so customers can't pick them.
+        // Example: { "2026-05-29": ["5:00pm", "5:15pm"] }
+        bookedSlots: {},
+
+        // ── FORMSPREE FORM ID ────────────────────────────────────────
+        // You'll receive an email for every booking. Create a dedicated
+        // form at formspree.io and paste the ID here.
+        formspreeId: "xjglrbdb",
+
+    };
+    // ================================================================
+
+    const MENU = [
+        { name: "Margherita",     desc: "Tomato · Mozzarella · Basil",                     price: 10 },
+        { name: "Pepperoni",      desc: "Tomato · Mozzarella · Pepperoni",                 price: 11 },
+        { name: "Calabrese",      desc: "Tomato · Mozzarella · Nduja · Salami · Chilli",   price: 12 },
+        { name: "The Vegetarian", desc: "Tomato · Mozzarella · Pepper · Onion · Mushroom", price: 10 },
+        { name: "Ham & Mushroom", desc: "Tomato · Mozzarella · Ham · Mushroom",            price: 11 },
+    ];
+
+    let selectedDate = null;
+    let selectedSlot = null;
+    let quantities   = MENU.map(() => 0);
+    let viewMonth    = new Date(); viewMonth.setDate(1);
+
+    document.getElementById('locationAddress').textContent = CONFIG.location;
+    document.getElementById('locationNote').textContent    = CONFIG.locationNote;
+
+    const MONTHS = ["January","February","March","April","May","June",
+                    "July","August","September","October","November","December"];
+
+    function renderCalendar() {
+        const year  = viewMonth.getFullYear();
+        const month = viewMonth.getMonth();
+        document.getElementById('calMonth').textContent = MONTHS[month] + ' ' + year;
+
+        const grid = document.getElementById('calGrid');
+        grid.innerHTML = '';
+
+        ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].forEach(d => {
+            const el = document.createElement('div');
+            el.className = 'cal-day-label';
+            el.textContent = d;
+            grid.appendChild(el);
+        });
+
+        const firstDow = new Date(year, month, 1).getDay();
+        const offset   = firstDow === 0 ? 6 : firstDow - 1;
+        for (let i = 0; i < offset; i++) {
+            const blank = document.createElement('div');
+            blank.className = 'cal-day';
+            grid.appendChild(blank);
+        }
+
+        const today       = new Date(); today.setHours(0,0,0,0);
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        for (let d = 1; d <= daysInMonth; d++) {
+            const mm      = String(month + 1).padStart(2, '0');
+            const dd      = String(d).padStart(2, '0');
+            const dateStr = year + '-' + mm + '-' + dd;
+            const dateObj = new Date(year, month, d);
+            const el      = document.createElement('div');
+            el.className  = 'cal-day';
+            el.textContent = d;
+
+            if (dateObj < today) {
+                el.classList.add('past');
+            } else if (CONFIG.availableDates.includes(dateStr)) {
+                el.classList.add('available');
+                if (dateStr === selectedDate) el.classList.add('selected');
+                el.addEventListener('click', () => selectDate(dateStr));
+            } else {
+                el.classList.add('unavailable');
+            }
+
+            grid.appendChild(el);
+        }
+    }
+
+    function changeMonth(dir) {
+        viewMonth.setMonth(viewMonth.getMonth() + dir);
+        renderCalendar();
+    }
+
+    function selectDate(dateStr) {
+        selectedDate = dateStr;
+        selectedSlot = null;
+        renderCalendar();
+        renderSlots();
+        const el = document.getElementById('slotStep');
+        el.style.display = 'block';
+        document.getElementById('detailStep').style.display = 'none';
+        setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+    }
+
+    function renderSlots() {
+        const booked = CONFIG.bookedSlots[selectedDate] || [];
+        const grid   = document.getElementById('slotsGrid');
+        grid.innerHTML = '';
+
+        CONFIG.slots.forEach(slot => {
+            const btn     = document.createElement('button');
+            btn.type      = 'button';
+            btn.className = 'slot-btn' + (slot === selectedSlot ? ' selected' : '');
+            btn.textContent = slot;
+
+            if (booked.includes(slot)) {
+                btn.disabled = true;
+                btn.title    = 'Slot full';
+            } else {
+                btn.addEventListener('click', () => selectSlot(slot));
+            }
+            grid.appendChild(btn);
+        });
+    }
+
+    function selectSlot(slot) {
+        selectedSlot = slot;
+        renderSlots();
+        renderDetailStep();
+        const el = document.getElementById('detailStep');
+        el.style.display = 'block';
+        setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+    }
+
+    function renderDetailStep() {
+        const dateObj     = new Date(selectedDate + 'T00:00:00');
+        const dayName     = dateObj.toLocaleDateString('en-GB', { weekday: 'long' });
+        const dateDisplay = dateObj.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+
+        document.getElementById('bookingSummary').innerHTML =
+            '<strong>' + dayName + ' ' + dateDisplay + '</strong> &nbsp;&middot;&nbsp; <strong>' + selectedSlot + '</strong><br>' + CONFIG.location;
+
+        const list = document.getElementById('pizzaList');
+        list.innerHTML = '';
+
+        MENU.forEach((pizza, i) => {
+            const row = document.createElement('div');
+            row.className = 'pizza-row';
+            row.innerHTML =
+                '<div>' +
+                  '<div class="pizza-name">' + pizza.name + '</div>' +
+                  '<div class="pizza-meta">' + pizza.desc + ' &middot; &pound;' + pizza.price + '</div>' +
+                '</div>' +
+                '<div class="qty-control">' +
+                  '<button type="button" class="qty-btn" data-i="' + i + '" data-delta="-1">&#8722;</button>' +
+                  '<span class="qty-num" id="qty-' + i + '">' + quantities[i] + '</span>' +
+                  '<button type="button" class="qty-btn" data-i="' + i + '" data-delta="1">+</button>' +
+                '</div>';
+            list.appendChild(row);
+        });
+
+        list.addEventListener('click', e => {
+            const btn = e.target.closest('.qty-btn');
+            if (!btn) return;
+            const i = parseInt(btn.dataset.i);
+            quantities[i] = Math.max(0, quantities[i] + parseInt(btn.dataset.delta));
+            document.getElementById('qty-' + i).textContent = quantities[i];
+            updateTotal();
+        });
+
+        updateTotal();
+    }
+
+    function updateTotal() {
+        const total = MENU.reduce((sum, p, i) => sum + p.price * quantities[i], 0);
+        const count = quantities.reduce((a, b) => a + b, 0);
+        document.getElementById('orderTotal').innerHTML =
+            count > 0 ? 'Total &nbsp;<strong>&pound;' + total + '</strong>' : '';
+    }
+
+    document.getElementById('preorderForm').addEventListener('submit', async e => {
+        e.preventDefault();
+
+        const name  = document.getElementById('custName').value.trim();
+        const phone = document.getElementById('custPhone').value.trim();
+        const count = quantities.reduce((a, b) => a + b, 0);
+
+        if (!name || !phone) { alert('Please enter your name and phone number.'); return; }
+        if (count === 0)      { alert('Please add at least one pizza to your order.'); return; }
+
+        const orderLines = MENU
+            .map((p, i) => quantities[i] > 0 ? quantities[i] + 'x ' + p.name + ' (£' + (p.price * quantities[i]) + ')' : null)
+            .filter(Boolean).join(', ');
+
+        const grandTotal = MENU.reduce((sum, p, i) => sum + p.price * quantities[i], 0);
+
+        document.getElementById('hiddenDate').value     = selectedDate;
+        document.getElementById('hiddenSlot').value     = selectedSlot;
+        document.getElementById('hiddenLocation').value = CONFIG.location;
+        document.getElementById('hiddenOrder').value    = orderLines + ' — Total £' + grandTotal;
+
+        const btn       = document.getElementById('submitBtn');
+        btn.disabled    = true;
+        btn.textContent = 'Sending…';
+
+        const res = await fetch('https://formspree.io/f/' + CONFIG.formspreeId, {
+            method: 'POST',
+            body: new FormData(e.target),
+            headers: { 'Accept': 'application/json' },
+        });
+
+        if (res.ok) {
+            document.getElementById('bookingSection').style.display = 'none';
+            document.getElementById('successSection').style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            btn.disabled    = false;
+            btn.textContent = 'Confirm Pre-Order';
+            alert('Something went wrong — please call us on 07301 573 944');
+        }
+    });
+
+    renderCalendar();
+    </script>
+
+</body>
+</html>
