@@ -623,12 +623,7 @@
         // ── DATES YOU'RE TRADING (YYYY-MM-DD) ───────────────────────
         // Map each date to a location key above.
         availableDates: {
-            "2026-05-29": "chelmsford",
-            "2026-05-30": "braintree",
-            "2026-06-05": "chelmsford",
-            "2026-06-06": "braintree",
-            "2026-06-12": "chelmsford",
-            "2026-06-13": "braintree",
+            "2026-06-19": "braintree",
         },
 
         // ── TIME SLOTS ───────────────────────────────────────────────
@@ -670,8 +665,8 @@
         return CONFIG.locations[CONFIG.availableDates[dateStr]] || { name: '', note: '' };
     }
 
-    document.getElementById('locationAddress').textContent = 'Chelmsford & Braintree';
-    document.getElementById('locationNote').textContent    = 'Select a date to see your pickup location';
+    document.getElementById('locationAddress').textContent = 'King William IV Pub, Braintree';
+    document.getElementById('locationNote').textContent    = 'Look for the blue van';
 
     const MONTHS = ["January","February","March","April","May","June",
                     "July","August","September","October","November","December"];
