@@ -613,20 +613,22 @@
     // ================================================================
     const CONFIG = {
 
-        // ── WHERE YOU'LL BE ──────────────────────────────────────────
-        location:     "Victoria Road Car Park, Chelmsford",
-        locationNote: "Look for the blue van",
+        // ── LOCATIONS ────────────────────────────────────────────────
+        locations: {
+            chelmsford: { name: "Victoria Road Car Park, Chelmsford", note: "Look for the blue van" },
+            braintree:  { name: "King William IV Pub, Braintree",     note: "Look for the blue van" },
+        },
 
         // ── DATES YOU'RE TRADING (YYYY-MM-DD) ───────────────────────
-        // Add or remove dates — only these show as bookable on the calendar.
-        availableDates: [
-            "2026-05-29",
-            "2026-05-30",
-            "2026-06-05",
-            "2026-06-06",
-            "2026-06-12",
-            "2026-06-13",
-        ],
+        // Map each date to a location key above.
+        availableDates: {
+            "2026-05-29": "chelmsford",
+            "2026-05-30": "braintree",
+            "2026-06-05": "chelmsford",
+            "2026-06-06": "braintree",
+            "2026-06-12": "chelmsford",
+            "2026-06-13": "braintree",
+        },
 
         // ── TIME SLOTS ───────────────────────────────────────────────
         slots: [
@@ -652,7 +654,6 @@
     const MENU = [
         { name: "Margherita",          desc: "Tomato · Mozzarella · Basil",                          price: 10, sumupUrl: "https://pay.sumup.com/b2c/QUOV9GHO" },
         { name: "Pepperoni",           desc: "Tomato · Mozzarella · Pepperoni",                      price: 11, sumupUrl: "https://pay.sumup.com/b2c/QYIEETYH" },
-        { name: "Calabrese",           desc: "Tomato · Mozzarella · Nduja · Salami · Red Chillies",  price: 12, sumupUrl: "" },
         { name: "BBQ Pulled Pork",     desc: "BBQ Sauce · Pulled Pork · Mozzarella · Crispy Onions", price: 12, sumupUrl: "https://pay.sumup.com/b2c/QH24EXL5" },
         { name: "Pesto Funghi",        desc: "Tomato · Mozzarella · Sautéed Mushroom · Pesto Oil",   price: 11, sumupUrl: "https://pay.sumup.com/b2c/QGP77A33" },
         { name: "Ham & Mushroom",      desc: "Tomato · Mozzarella · Ham · Sautéed Mushroom",         price: 11, sumupUrl: "https://pay.sumup.com/b2c/QORTWEMS" },
@@ -664,8 +665,12 @@
     let quantities   = MENU.map(() => 0);
     let viewMonth    = new Date(); viewMonth.setDate(1);
 
-    document.getElementById('locationAddress').textContent = CONFIG.location;
-    document.getElementById('locationNote').textContent    = CONFIG.locationNote;
+    function getLocation(dateStr) {
+        return CONFIG.locations[CONFIG.availableDates[dateStr]] || { name: '', note: '' };
+    }
+
+    document.getElementById('locationAddress').textContent = 'Chelmsford & Braintree';
+    document.getElementById('locationNote').textContent    = 'Select a date to see your pickup location';
 
     const MONTHS = ["January","February","March","April","May","June",
                     "July","August","September","October","November","December"];
@@ -707,7 +712,7 @@
 
             if (dateObj < today) {
                 el.classList.add('past');
-            } else if (CONFIG.availableDates.includes(dateStr)) {
+            } else if (dateStr in CONFIG.availableDates) {
                 el.classList.add('available');
                 if (dateStr === selectedDate) el.classList.add('selected');
                 el.addEventListener('click', () => selectDate(dateStr));
@@ -727,6 +732,9 @@
     function selectDate(dateStr) {
         selectedDate = dateStr;
         selectedSlot = null;
+        const loc = getLocation(dateStr);
+        document.getElementById('locationAddress').textContent = loc.name;
+        document.getElementById('locationNote').textContent    = loc.note;
         renderCalendar();
         renderSlots();
         const el = document.getElementById('slotStep');
@@ -771,7 +779,7 @@
         const dateDisplay = dateObj.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 
         document.getElementById('bookingSummary').innerHTML =
-            '<strong>' + dayName + ' ' + dateDisplay + '</strong> &nbsp;&middot;&nbsp; <strong>' + selectedSlot + '</strong><br>' + CONFIG.location;
+            '<strong>' + dayName + ' ' + dateDisplay + '</strong> &nbsp;&middot;&nbsp; <strong>' + selectedSlot + '</strong><br>' + getLocation(selectedDate).name;
 
         const list = document.getElementById('pizzaList');
         list.innerHTML = '';
@@ -829,7 +837,7 @@
 
         document.getElementById('hiddenDate').value     = selectedDate;
         document.getElementById('hiddenSlot').value     = selectedSlot;
-        document.getElementById('hiddenLocation').value = CONFIG.location;
+        document.getElementById('hiddenLocation').value = getLocation(selectedDate).name;
         document.getElementById('hiddenOrder').value    = orderLines + ' — Total £' + grandTotal;
 
         const btn       = document.getElementById('submitBtn');
