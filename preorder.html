@@ -585,7 +585,7 @@
                         <textarea id="custNotes" name="notes" placeholder="e.g. gluten-free base, extra chilli…"></textarea>
                     </div>
                     <div class="submit-wrap">
-                        <button type="submit" id="submitBtn">Confirm Pre-Order</button>
+                        <button type="submit" id="submitBtn">Confirm &amp; Pay</button>
                     </div>
                 </div>
                 <input type="hidden" name="date"          id="hiddenDate">
@@ -597,13 +597,6 @@
         </div>
     </section>
 
-    <section class="payment-section" id="paymentSection">
-        <h2>Almost there!</h2>
-        <p class="payment-subtitle">Your slot is reserved — please complete payment below to confirm your order.</p>
-        <div id="paymentItems"></div>
-        <div class="payment-total" id="paymentTotal"></div>
-        <p class="payment-note">Each button opens a secure SumUp payment page in a new tab.<br>Return here after each payment to pay for the next item.</p>
-    </section>
 
     <footer>&copy; 2026 Luali Pizza · Chelmsford &amp; Braintree</footer>
 
@@ -648,12 +641,12 @@
     // ================================================================
 
     const MENU = [
-        { name: "Margherita",          desc: "Tomato · Mozzarella · Basil",                          price: 10, sumupUrl: "https://pay.sumup.com/b2c/QUOV9GHO" },
-        { name: "Pepperoni",           desc: "Tomato · Mozzarella · Pepperoni",                      price: 11, sumupUrl: "https://pay.sumup.com/b2c/QYIEETYH" },
-        { name: "BBQ Pulled Pork",     desc: "BBQ Sauce · Pulled Pork · Mozzarella · Crispy Onions", price: 12, sumupUrl: "https://pay.sumup.com/b2c/QH24EXL5" },
-        { name: "Pesto Funghi",        desc: "Tomato · Mozzarella · Sautéed Mushroom · Pesto Oil",   price: 11, sumupUrl: "https://pay.sumup.com/b2c/QGP77A33" },
-        { name: "Ham & Mushroom",      desc: "Tomato · Mozzarella · Ham · Sautéed Mushroom",         price: 11, sumupUrl: "https://pay.sumup.com/b2c/QORTWEMS" },
-        { name: "Cheesy Garlic Bread", desc: "Mozzarella · Garlic Butter · Parsley",                 price:  9, sumupUrl: "https://pay.sumup.com/b2c/QUYKKYUN" },
+        { name: "Margherita",          desc: "Tomato · Mozzarella · Basil",                          price: 10 },
+        { name: "Pepperoni",           desc: "Tomato · Mozzarella · Pepperoni",                      price: 11 },
+        { name: "BBQ Pulled Pork",     desc: "BBQ Sauce · Pulled Pork · Mozzarella · Crispy Onions", price: 12 },
+        { name: "Pesto Funghi",        desc: "Tomato · Mozzarella · Sautéed Mushroom · Pesto Oil",   price: 11 },
+        { name: "Ham & Mushroom",      desc: "Tomato · Mozzarella · Ham · Sautéed Mushroom",         price: 11 },
+        { name: "Cheesy Garlic Bread", desc: "Mozzarella · Garlic Butter · Parsley",                 price:  9 },
     ];
 
     let selectedDate = null;
@@ -838,70 +831,43 @@
 
         const btn       = document.getElementById('submitBtn');
         btn.disabled    = true;
-        btn.textContent = 'Sending…';
+        btn.textContent = 'Processing…';
 
-        const res = await fetch('https://formspree.io/f/' + CONFIG.formspreeId, {
+        // Send order details via Formspree so you receive the email
+        const formRes = await fetch('https://formspree.io/f/' + CONFIG.formspreeId, {
             method: 'POST',
             body: new FormData(e.target),
             headers: { 'Accept': 'application/json' },
         });
 
-        if (res.ok) {
-            showPaymentSection();
-        } else {
+        if (!formRes.ok) {
             btn.disabled    = false;
-            btn.textContent = 'Confirm Pre-Order';
+            btn.textContent = 'Confirm & Pay';
             alert('Something went wrong — please call us on 07301 573 944');
+            return;
         }
+
+        // Create SumUp checkout for the exact total
+        const checkoutRes = await fetch('/.netlify/functions/create-checkout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                amount: grandTotal,
+                reference: 'LUALI-' + Date.now(),
+                description: 'Luali Pizza — ' + orderLines,
+            }),
+        });
+
+        if (!checkoutRes.ok) {
+            btn.disabled    = false;
+            btn.textContent = 'Confirm & Pay';
+            alert('Payment setup failed — please call us on 07301 573 944');
+            return;
+        }
+
+        const { id } = await checkoutRes.json();
+        window.location.href = 'https://checkout.sumup.com/pay/' + id;
     });
-
-    function showPaymentSection() {
-        document.getElementById('bookingSection').style.display = 'none';
-        const section = document.getElementById('paymentSection');
-        section.style.display = 'block';
-
-        const container = document.getElementById('paymentItems');
-        container.innerHTML = '';
-        let grandTotal = 0;
-
-        MENU.forEach((pizza, i) => {
-            if (quantities[i] === 0) return;
-            grandTotal += pizza.price * quantities[i];
-
-            for (let j = 0; j < quantities[i]; j++) {
-                const numLabel = quantities[i] > 1
-                    ? ' <span style="opacity:0.35;font-size:0.8rem;font-family:Lato,sans-serif">#' + (j + 1) + '</span>'
-                    : '';
-                const payEl = pizza.sumupUrl
-                    ? '<a href="' + pizza.sumupUrl + '" target="_blank" rel="noopener" class="pay-btn">Pay &pound;' + pizza.price + '</a>'
-                    : '<span class="pay-btn unavailable">Link coming soon</span>';
-
-                const row = document.createElement('div');
-                row.className = 'payment-item';
-                row.innerHTML =
-                    '<div>' +
-                        '<div class="payment-item-name">' + pizza.name + numLabel + '</div>' +
-                        '<div class="payment-item-price">&pound;' + pizza.price + '</div>' +
-                    '</div>' +
-                    payEl;
-                container.appendChild(row);
-            }
-        });
-
-        container.addEventListener('click', e => {
-            const btn = e.target.closest('a.pay-btn');
-            if (!btn || btn.classList.contains('paid')) return;
-            btn.classList.add('paid');
-            btn.textContent = 'Paid ✓';
-            e.preventDefault();
-            window.open(btn.href, '_blank', 'noopener');
-        });
-
-        document.getElementById('paymentTotal').innerHTML =
-            'Total &nbsp;<strong>&pound;' + grandTotal + '</strong>';
-
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
 
     renderCalendar();
     </script>
