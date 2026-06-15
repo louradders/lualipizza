@@ -58,6 +58,7 @@ exports.handler = async (event) => {
   });
 
   const data = await resp.json();
+  console.log('SumUp checkout response:', JSON.stringify(data));
 
   if (!resp.ok) {
     console.error('SumUp checkout error:', data);
@@ -71,6 +72,6 @@ exports.handler = async (event) => {
   return {
     statusCode: 200,
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id: data.id }),
+    body: JSON.stringify(data),
   };
 };
