@@ -507,11 +507,66 @@
             border-top: 1px solid #2a2a2a;
         }
 
+        .pay-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.92);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pay-overlay.active { display: flex; }
+
+        .pay-overlay-inner {
+            background: #1a1a1a;
+            padding: 40px 32px;
+            width: 90%;
+            max-width: 460px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .pay-overlay-title {
+            font-size: 0.7rem;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #333;
+        }
+
+        .success-section {
+            display: none;
+            text-align: center;
+            padding: 80px 40px 120px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .success-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(32px, 6vw, 60px);
+            font-weight: 900;
+            margin-bottom: 20px;
+        }
+
+        .success-section p {
+            font-size: 0.8rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            opacity: 0.55;
+            line-height: 1.9;
+        }
+
         @keyframes fadeUp {
             from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
+    <script src="https://gateway.sumup.com/gateway/ecom/card/sdk/sumupcard.min.js"></script>
 </head>
 <body>
 
@@ -597,6 +652,18 @@
         </div>
     </section>
 
+
+    <div class="pay-overlay" id="payOverlay">
+        <div class="pay-overlay-inner">
+            <div class="pay-overlay-title">Complete Payment</div>
+            <div id="sumupContainer"></div>
+        </div>
+    </div>
+
+    <section class="success-section" id="successSection">
+        <h2>You're all set!</h2>
+        <p>Payment confirmed &amp; slot reserved.<br>See you at the pop-up!</p>
+    </section>
 
     <footer>&copy; 2026 Luali Pizza · Chelmsford &amp; Braintree</footer>
 
@@ -865,8 +932,27 @@
             return;
         }
 
-        const { id } = await checkoutRes.json();
-        window.location.href = 'https://checkout.sumup.com/pay/' + id;
+        const checkoutData = await checkoutRes.json();
+        const overlay = document.getElementById('payOverlay');
+        overlay.classList.add('active');
+
+        SumUpCard.mount({
+            id: 'sumupContainer',
+            checkoutId: checkoutData.id,
+            onResponse: function(type, body) {
+                if (type === 'success') {
+                    overlay.classList.remove('active');
+                    document.getElementById('bookingSection').style.display = 'none';
+                    document.getElementById('successSection').style.display = 'block';
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else if (type === 'error' || type === 'invalid') {
+                    overlay.classList.remove('active');
+                    btn.disabled    = false;
+                    btn.textContent = 'Confirm & Pay';
+                    alert('Payment failed — please try again or call us on 07301 573 944');
+                }
+            }
+        });
     });
 
     renderCalendar();
