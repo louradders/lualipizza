@@ -16,24 +16,51 @@ exports.handler = async (event) => {
     return { statusCode: 400, body: 'Invalid amount' };
   }
 
+  const authHeader = { 'Authorization': `Bearer ${process.env.SUMUP_API_KEY}` };
+
+  // Fetch merchant code from SumUp account
+  const meResp = await fetch('https://api.sumup.com/v0.1/me', {
+    headers: authHeader,
+  });
+  const meData = await meResp.json();
+
+  if (!meResp.ok) {
+    console.error('SumUp /me error:', meData);
+    return {
+      statusCode: 500,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ error: 'Failed to authenticate with SumUp' }),
+    };
+  }
+
+  const merchantCode = meData.merchant_profile?.merchant_code;
+
+  if (!merchantCode) {
+    console.error('No merchant code found in:', meData);
+    return {
+      statusCode: 500,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ error: 'Merchant code not found' }),
+    };
+  }
+
+  // Create the checkout
   const resp = await fetch('https://api.sumup.com/v0.1/checkouts', {
     method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${process.env.SUMUP_API_KEY}`,
-      'Content-Type': 'application/json',
-    },
+    headers: { ...authHeader, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       checkout_reference: reference || `LUALI-${Date.now()}`,
       amount: parseFloat(amount.toFixed(2)),
       currency: 'GBP',
       description: description || 'Luali Pizza Order',
+      merchant_code: merchantCode,
     }),
   });
 
   const data = await resp.json();
 
   if (!resp.ok) {
-    console.error('SumUp error:', data);
+    console.error('SumUp checkout error:', data);
     return {
       statusCode: 500,
       headers: { 'Content-Type': 'application/json' },
