@@ -865,20 +865,6 @@
         btn.disabled    = true;
         btn.textContent = 'Processing…';
 
-        // Send order details via Formspree so you receive the email
-        const formRes = await fetch('https://formspree.io/f/' + CONFIG.formspreeId, {
-            method: 'POST',
-            body: new FormData(e.target),
-            headers: { 'Accept': 'application/json' },
-        });
-
-        if (!formRes.ok) {
-            btn.disabled    = false;
-            btn.textContent = 'Confirm & Pay';
-            alert('Something went wrong — please call us on 07301 573 944');
-            return;
-        }
-
         // Create SumUp checkout for the exact total
         const checkoutRes = await fetch('/.netlify/functions/create-checkout', {
             method: 'POST',
@@ -914,6 +900,13 @@
                         const verifyData = await verifyRes.json();
 
                         if (verifyRes.ok && verifyData.status === 'PAID') {
+                            // Payment confirmed — now send the order details via Formspree
+                            fetch('https://formspree.io/f/' + CONFIG.formspreeId, {
+                                method: 'POST',
+                                body: new FormData(e.target),
+                                headers: { 'Accept': 'application/json' },
+                            }).catch(() => {});
+
                             document.getElementById('bookingSection').style.display = 'none';
                             document.getElementById('successSection').style.display = 'block';
                             window.scrollTo({ top: 0, behavior: 'smooth' });
