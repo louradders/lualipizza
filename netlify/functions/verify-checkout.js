@@ -24,9 +24,11 @@ exports.handler = async (event) => {
     };
   }
 
+  console.log('SumUp verify-checkout response:', JSON.stringify(data));
+
   return {
     statusCode: 200,
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ status: data.status }),
+    body: JSON.stringify({ status: data.status, transactions: data.transactions }),
   };
 };
