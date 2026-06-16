@@ -536,12 +536,13 @@
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
-    <script src="https://gateway.sumup.com/gateway/ecom/card/sdk/sumupcard.min.js"></script>
+    <script src="https://gateway.sumup.com/gateway/ecom/card/v2/sdk.js"></script>
 </head>
 <body>
 
     <nav>
         <a href="index.html#menu">Menu</a>
+        <a href="preorder.html">Order Now</a>
         <a href="privateevents.html">Private Events</a>
     </nav>
 
@@ -898,11 +899,27 @@
 
         SumUpCard.mount({
             checkoutId: checkoutData.id,
-            onResponse: function(type, body) {
+            onResponse: async function(type, body) {
                 if (type === 'success') {
-                    document.getElementById('bookingSection').style.display = 'none';
-                    document.getElementById('successSection').style.display = 'block';
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    btn.textContent = 'Verifying…';
+
+                    try {
+                        const verifyRes  = await fetch('/.netlify/functions/verify-checkout?id=' + checkoutData.id);
+                        const verifyData = await verifyRes.json();
+
+                        if (verifyRes.ok && verifyData.status === 'PAID') {
+                            document.getElementById('bookingSection').style.display = 'none';
+                            document.getElementById('successSection').style.display = 'block';
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                            return;
+                        }
+                    } catch {
+                        // fall through to failure handling below
+                    }
+
+                    btn.disabled    = false;
+                    btn.textContent = 'Confirm & Pay';
+                    alert('Payment could not be verified — please call us on 07301 573 944 before retrying.');
                 } else if (type === 'error' || type === 'invalid') {
                     btn.disabled    = false;
                     btn.textContent = 'Confirm & Pay';
