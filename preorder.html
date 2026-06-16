@@ -619,6 +619,8 @@
                 <input type="hidden" name="order_summary" id="hiddenOrder">
                 <input type="hidden" name="_subject"      value="New Luali Pizza Pre-Order!">
             </form>
+
+            <div id="sumup-card" style="margin-top: 28px;"></div>
         </div>
     </section>
 
@@ -897,7 +899,11 @@
 
         const checkoutData = await checkoutRes.json();
 
+        btn.style.display = 'none';
+        document.getElementById('sumup-card').scrollIntoView({ behavior: 'smooth', block: 'center' });
+
         SumUpCard.mount({
+            id: 'sumup-card',
             checkoutId: checkoutData.id,
             onResponse: async function(type, body) {
                 if (type === 'success') {
@@ -917,12 +923,14 @@
                         // fall through to failure handling below
                     }
 
-                    btn.disabled    = false;
-                    btn.textContent = 'Confirm & Pay';
+                    btn.disabled       = false;
+                    btn.textContent    = 'Confirm & Pay';
+                    btn.style.display  = '';
                     alert('Payment could not be verified — please call us on 07301 573 944 before retrying.');
                 } else if (type === 'error' || type === 'invalid') {
-                    btn.disabled    = false;
-                    btn.textContent = 'Confirm & Pay';
+                    btn.disabled       = false;
+                    btn.textContent    = 'Confirm & Pay';
+                    btn.style.display  = '';
                     alert('Payment failed — please try again or call us on 07301 573 944');
                 }
             }
