@@ -44,5 +44,28 @@ exports.handler = async (event) => {
     }
   }
 
+  // DELETE — unbook a slot (admin use)
+  if (event.httpMethod === 'DELETE') {
+    try {
+      const { slot } = JSON.parse(event.body || '{}');
+      if (!slot) {
+        return { statusCode: 400, headers: HEADERS, body: '{"error":"missing slot"}' };
+      }
+
+      let slots = [];
+      try {
+        slots = (await store.get('booked-slots', { type: 'json' })) || [];
+      } catch {}
+
+      slots = slots.filter(s => s !== slot);
+      await store.setJSON('booked-slots', slots);
+
+      return { statusCode: 200, headers: HEADERS, body: '{"ok":true}' };
+    } catch (err) {
+      console.error('booked-slots delete error:', err);
+      return { statusCode: 500, headers: HEADERS, body: '{"error":"internal"}' };
+    }
+  }
+
   return { statusCode: 405, body: 'Method Not Allowed' };
 };
