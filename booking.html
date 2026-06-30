@@ -686,7 +686,7 @@
     }
 
     renderSlots([]);
-    fetch('/.netlify/functions/booked-slots')
+    fetch('/slots.json')
         .then(r => r.json())
         .then(data => {
             if (data.closed) {
@@ -694,9 +694,9 @@
                 document.getElementById('closedSection').hidden  = false;
                 document.getElementById('closedDate').textContent = CONFIG.eventDate;
             }
-            renderSlots(data.slots || []);
+            renderSlots(data.bookedSlots || []);
         })
-        .catch(() => { /* silently use hardcoded config only */ });
+        .catch(() => {});
 
     // Render menu
     const quantities = MENU.map(() => 0);

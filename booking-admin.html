@@ -102,7 +102,7 @@
             display: none;
         }
 
-        /* OPEN / CLOSE TOGGLE */
+        /* OPEN / CLOSE STATUS */
         .bookings-status {
             display: flex;
             align-items: center;
@@ -131,34 +131,12 @@
         .status-val.open   { color: #7ec87e; }
         .status-val.closed { color: #e07070; }
 
-        .toggle-btn {
-            font-family: 'Lato', sans-serif;
-            font-size: 0.65rem;
-            font-weight: 700;
-            letter-spacing: 0.3em;
-            text-transform: uppercase;
-            color: #111;
-            background: #fff;
-            border: none;
-            padding: 10px 16px;
-            cursor: pointer;
-            transition: opacity 0.2s;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-
-        .toggle-btn:hover { opacity: 0.75; }
-        .toggle-btn:disabled { opacity: 0.3; cursor: default; }
-
         /* SLOT GRID */
         .slot-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 8px;
-        }
-
-        @media (min-width: 400px) {
-            .slot-grid { grid-template-columns: repeat(3, 1fr); }
+            margin-bottom: 32px;
         }
 
         .slot-btn {
@@ -173,22 +151,15 @@
             background: none;
             color: #fff;
             cursor: pointer;
-            transition: border-color 0.15s, background 0.15s, opacity 0.15s;
+            transition: border-color 0.15s, background 0.15s;
             -webkit-tap-highlight-color: transparent;
             min-height: 72px;
         }
-
-        .slot-btn:active { opacity: 0.6; }
 
         .slot-btn.taken {
             background: #fff;
             color: #111;
             border-color: #fff;
-        }
-
-        .slot-btn.busy {
-            opacity: 0.4;
-            pointer-events: none;
         }
 
         .slot-time {
@@ -197,23 +168,50 @@
             letter-spacing: 0.03em;
         }
 
-        .slot-status {
+        .slot-label {
             font-size: 0.55rem;
             letter-spacing: 0.3em;
             text-transform: uppercase;
         }
 
-        .slot-btn:not(.taken) .slot-status { opacity: 0.35; }
+        .slot-btn:not(.taken) .slot-label { opacity: 0.35; }
 
-        /* STATUS */
-        .status-msg {
-            margin-top: 20px;
-            font-size: 0.7rem;
-            letter-spacing: 0.1em;
+        /* SAVE BUTTON */
+        .save-btn {
+            font-family: 'Lato', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.4em;
             text-transform: uppercase;
-            opacity: 0.45;
+            color: #111;
+            background: #fff;
+            border: none;
+            padding: 18px;
+            width: 100%;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            margin-bottom: 16px;
+        }
+
+        .save-btn:hover { opacity: 0.8; }
+
+        .hint {
+            font-size: 0.68rem;
+            letter-spacing: 0.06em;
+            line-height: 1.8;
+            opacity: 0.4;
             text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .saved-msg {
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            text-align: center;
+            color: #7ec87e;
             min-height: 1.4em;
+            margin-bottom: 16px;
         }
 
         footer {
@@ -241,15 +239,20 @@
 
     <!-- ADMIN PANEL -->
     <div class="admin-panel" id="adminPanel">
+
         <div class="bookings-status">
             <div>
                 <div class="status-label">Bookings</div>
-                <div class="status-val" id="closedVal">—</div>
+                <div class="status-val" id="closedVal">Open</div>
             </div>
-            <button class="toggle-btn" id="toggleBtn" onclick="toggleClosed()">—</button>
         </div>
+
         <div class="slot-grid" id="slotGrid"></div>
-        <p class="status-msg" id="statusMsg"></p>
+
+        <p class="saved-msg" id="savedMsg"></p>
+        <button class="save-btn" onclick="saveChanges()">Save &amp; Open GitHub to update</button>
+        <p class="hint">Tapping Save copies your changes and opens GitHub.<br>Select all the text in the file, paste, then commit.</p>
+
     </div>
 
     <footer>&copy; 2026 Luali Pizza</footer>
@@ -262,6 +265,11 @@
         '6:00pm', '6:10pm', '6:20pm', '6:30pm', '6:40pm', '6:50pm',
         '7:00pm', '7:10pm', '7:20pm', '7:30pm', '7:40pm', '7:50pm',
     ];
+
+    const GITHUB_EDIT_URL = 'https://github.com/louradders/lualipizza/edit/main/slots.json';
+
+    let bookedSlots = new Set();
+    let isClosed = false;
 
     document.getElementById('adminPw').addEventListener('keydown', e => {
         if (e.key === 'Enter') unlock();
@@ -277,98 +285,62 @@
         }
         document.getElementById('gate').style.display = 'none';
         document.getElementById('adminPanel').style.display = 'block';
-        loadSlots();
+        loadCurrent();
     }
 
-    let currentClosed = false;
-
-    async function loadSlots() {
-        document.getElementById('statusMsg').textContent = 'Loading...';
-        let data = { slots: [], closed: false };
+    async function loadCurrent() {
         try {
-            const res = await fetch('/.netlify/functions/booked-slots');
-            data = await res.json();
+            const res = await fetch('/slots.json?t=' + Date.now());
+            const data = await res.json();
+            bookedSlots = new Set(data.bookedSlots || []);
+            isClosed = !!data.closed;
         } catch {
-            document.getElementById('statusMsg').textContent = 'Could not reach server — showing last known state.';
+            bookedSlots = new Set();
+            isClosed = false;
         }
+        renderGrid();
+    }
 
-        currentClosed = !!data.closed;
+    function renderGrid() {
         const closedVal = document.getElementById('closedVal');
-        const toggleBtn = document.getElementById('toggleBtn');
-        if (currentClosed) {
-            closedVal.textContent = 'Closed';
-            closedVal.className = 'status-val closed';
-            toggleBtn.textContent = 'Open bookings';
-        } else {
-            closedVal.textContent = 'Open';
-            closedVal.className = 'status-val open';
-            toggleBtn.textContent = 'Close bookings';
-        }
+        closedVal.textContent = isClosed ? 'Closed' : 'Open';
+        closedVal.className = 'status-val ' + (isClosed ? 'closed' : 'open');
 
-        const booked = new Set(data.slots || []);
         const grid = document.getElementById('slotGrid');
         grid.innerHTML = '';
-
         SLOTS.forEach(slot => {
-            const taken = booked.has(slot);
+            const taken = bookedSlots.has(slot);
             const btn = document.createElement('button');
             btn.className = 'slot-btn' + (taken ? ' taken' : '');
             btn.innerHTML =
                 '<span class="slot-time">' + slot + '</span>' +
-                '<span class="slot-status">' + (taken ? 'Blocked' : 'Free') + '</span>';
-            btn.addEventListener('click', () => toggleSlot(btn, slot));
+                '<span class="slot-label">' + (taken ? 'Blocked' : 'Free') + '</span>';
+            btn.addEventListener('click', () => {
+                if (bookedSlots.has(slot)) {
+                    bookedSlots.delete(slot);
+                } else {
+                    bookedSlots.add(slot);
+                }
+                renderGrid();
+            });
             grid.appendChild(btn);
         });
-
-        const count = booked.size;
-        document.getElementById('statusMsg').textContent =
-            count === 0 ? 'No slots blocked.' : count + ' slot' + (count === 1 ? '' : 's') + ' blocked. Tap to toggle.';
     }
 
-    async function toggleSlot(btn, slot) {
-        const isTaken = btn.classList.contains('taken');
-        btn.classList.add('busy');
+    function saveChanges() {
+        const json = JSON.stringify({
+            closed: isClosed,
+            bookedSlots: Array.from(bookedSlots)
+        }, null, 2);
 
-        try {
-            const res = await fetch('/.netlify/functions/booked-slots', {
-                method: isTaken ? 'DELETE' : 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ slot }),
-            });
-
-            if (res.ok) {
-                await loadSlots();
-            } else {
-                document.getElementById('statusMsg').textContent = 'Failed — try again.';
-                btn.classList.remove('busy');
-            }
-        } catch {
-            document.getElementById('statusMsg').textContent = 'Failed — try again.';
-            btn.classList.remove('busy');
-        }
-    }
-
-    async function toggleClosed() {
-        const btn = document.getElementById('toggleBtn');
-        btn.disabled = true;
-
-        try {
-            const res = await fetch('/.netlify/functions/booked-slots', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ closed: !currentClosed }),
-            });
-
-            if (res.ok) {
-                await loadSlots();
-            } else {
-                document.getElementById('statusMsg').textContent = 'Failed — try again.';
-            }
-        } catch {
-            document.getElementById('statusMsg').textContent = 'Failed — try again.';
-        }
-
-        btn.disabled = false;
+        navigator.clipboard.writeText(json).then(() => {
+            document.getElementById('savedMsg').textContent = 'Copied! Now paste into GitHub.';
+            window.open(GITHUB_EDIT_URL, '_blank');
+        }).catch(() => {
+            // Clipboard failed — show the JSON for manual copy
+            prompt('Copy this and paste into GitHub:', json);
+            window.open(GITHUB_EDIT_URL, '_blank');
+        });
     }
     </script>
 
