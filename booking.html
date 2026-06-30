@@ -688,7 +688,14 @@
     renderSlots([]);
     fetch('/.netlify/functions/booked-slots')
         .then(r => r.json())
-        .then(renderSlots)
+        .then(data => {
+            if (data.closed) {
+                document.getElementById('bookingSection').hidden = true;
+                document.getElementById('closedSection').hidden  = false;
+                document.getElementById('closedDate').textContent = CONFIG.eventDate;
+            }
+            renderSlots(data.slots || []);
+        })
         .catch(() => { /* silently use hardcoded config only */ });
 
     // Render menu

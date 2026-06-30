@@ -103,6 +103,51 @@
             display: none;
         }
 
+        .bookings-status {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 16px 20px;
+            border: 1px solid #2a2a2a;
+            margin-bottom: 32px;
+        }
+
+        .bookings-status .status-label {
+            font-size: 0.65rem;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            opacity: 0.45;
+        }
+
+        .bookings-status .status-val {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+
+        .bookings-status .status-val.open  { color: #7ec87e; }
+        .bookings-status .status-val.closed { color: #e07070; }
+
+        .toggle-btn {
+            font-family: 'Lato', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: #111;
+            background: #fff;
+            border: none;
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            white-space: nowrap;
+        }
+
+        .toggle-btn:hover { opacity: 0.75; }
+        .toggle-btn:disabled { opacity: 0.3; cursor: default; }
+
         .panel-note {
             font-size: 0.72rem;
             letter-spacing: 0.08em;
@@ -236,6 +281,13 @@
 
     <!-- ADMIN PANEL -->
     <div class="admin-panel" id="adminPanel">
+        <div class="bookings-status">
+            <div>
+                <div class="status-label">Bookings</div>
+                <div class="status-val" id="closedVal">—</div>
+            </div>
+            <button class="toggle-btn" id="toggleBtn" onclick="toggleClosed()">—</button>
+        </div>
         <p class="panel-note">Booked slots are highlighted. Click Unbook to free a slot back up.</p>
         <div class="slot-list" id="slotList"></div>
         <button class="reload-btn" onclick="loadSlots()">Refresh</button>
@@ -271,17 +323,33 @@
         loadSlots();
     }
 
+    let currentClosed = false;
+
     async function loadSlots() {
         document.getElementById('statusMsg').textContent = 'Loading…';
-        let booked = [];
+        let data = { slots: [], closed: false };
         try {
             const res = await fetch('/.netlify/functions/booked-slots');
-            booked = await res.json();
+            data = await res.json();
         } catch {
             document.getElementById('statusMsg').textContent = 'Could not load slots.';
             return;
         }
 
+        currentClosed = !!data.closed;
+        const closedVal = document.getElementById('closedVal');
+        const toggleBtn = document.getElementById('toggleBtn');
+        if (currentClosed) {
+            closedVal.textContent = 'Closed';
+            closedVal.className = 'status-val closed';
+            toggleBtn.textContent = 'Open bookings';
+        } else {
+            closedVal.textContent = 'Open';
+            closedVal.className = 'status-val open';
+            toggleBtn.textContent = 'Close bookings';
+        }
+
+        const booked = data.slots || [];
         const list = document.getElementById('slotList');
         list.innerHTML = '';
 
@@ -299,6 +367,30 @@
         });
 
         document.getElementById('statusMsg').textContent = booked.length + ' slot' + (booked.length === 1 ? '' : 's') + ' booked.';
+    }
+
+    async function toggleClosed() {
+        const btn = document.getElementById('toggleBtn');
+        btn.disabled = true;
+        document.getElementById('statusMsg').textContent = '';
+
+        try {
+            const res = await fetch('/.netlify/functions/booked-slots', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ closed: !currentClosed }),
+            });
+
+            if (res.ok) {
+                await loadSlots();
+            } else {
+                document.getElementById('statusMsg').textContent = 'Failed — try again.';
+            }
+        } catch {
+            document.getElementById('statusMsg').textContent = 'Failed — try again.';
+        }
+
+        btn.disabled = false;
     }
 
     async function book(btn, slot) {
