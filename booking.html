@@ -831,13 +831,13 @@
             });
 
             if (res.ok) {
-                document.getElementById(‘confTime’).textContent = slotInput.value;
-                document.getElementById(‘confMsg’).textContent  =
+                document.getElementById('confTime').textContent = slotInput.value;
+                document.getElementById('confMsg').textContent  =
                     "You're booked for " + slotInput.value + " -- see you on " +
                     CONFIG.eventDay + "! We'll reply to confirm your slot shortly.";
-                document.getElementById(‘bookingSection’).hidden      = true;
-                document.getElementById(‘confirmationSection’).hidden = false;
-                window.scrollTo({ top: 0, behavior: ‘smooth’ });
+                document.getElementById('bookingSection').hidden      = true;
+                document.getElementById('confirmationSection').hidden = false;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             } else {
                 btn.disabled    = false;
                 btn.textContent = 'Request Booking';
