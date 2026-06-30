@@ -653,32 +653,43 @@
 
     // Render slot grid
     const slotsGrid = document.getElementById('slotsGrid');
-    SLOTS.forEach((slot, i) => {
-        const item  = document.createElement('div');
-        item.className = 'slot-item';
 
-        const radio    = document.createElement('input');
-        radio.type     = 'radio';
-        radio.name     = 'arrival_time';
-        radio.id       = 'slot-' + i;
-        radio.value    = slot;
+    function renderSlots(liveBooked) {
+        const booked = new Set([...CONFIG.bookedSlots, ...(liveBooked || [])]);
+        slotsGrid.innerHTML = '';
+        SLOTS.forEach((slot, i) => {
+            const item  = document.createElement('div');
+            item.className = 'slot-item';
 
-        const taken = CONFIG.bookedSlots.includes(slot);
-        if (taken) radio.disabled = true;
+            const radio    = document.createElement('input');
+            radio.type     = 'radio';
+            radio.name     = 'arrival_time';
+            radio.id       = 'slot-' + i;
+            radio.value    = slot;
 
-        const lbl      = document.createElement('label');
-        lbl.htmlFor    = 'slot-' + i;
-        lbl.textContent = slot;
-        if (taken) lbl.classList.add('slot-taken');
+            const taken = booked.has(slot);
+            if (taken) radio.disabled = true;
 
-        item.appendChild(radio);
-        item.appendChild(lbl);
-        slotsGrid.appendChild(item);
+            const lbl      = document.createElement('label');
+            lbl.htmlFor    = 'slot-' + i;
+            lbl.textContent = slot;
+            if (taken) lbl.classList.add('slot-taken');
 
-        radio.addEventListener('change', () => {
-            document.getElementById('slotError').hidden = true;
+            item.appendChild(radio);
+            item.appendChild(lbl);
+            slotsGrid.appendChild(item);
+
+            radio.addEventListener('change', () => {
+                document.getElementById('slotError').hidden = true;
+            });
         });
-    });
+    }
+
+    renderSlots([]);
+    fetch('/.netlify/functions/booked-slots')
+        .then(r => r.json())
+        .then(renderSlots)
+        .catch(() => { /* silently use hardcoded config only */ });
 
     // Render menu
     const quantities = MENU.map(() => 0);
@@ -815,8 +826,8 @@
             if (res.ok) {
                 document.getElementById(‘confTime’).textContent = slotInput.value;
                 document.getElementById(‘confMsg’).textContent  =
-                    "You’re booked for " + slotInput.value + " — see you on " +
-                    CONFIG.eventDay + "! We’ll reply to confirm your slot shortly.";
+                    "You're booked for " + slotInput.value + " -- see you on " +
+                    CONFIG.eventDay + "! We'll reply to confirm your slot shortly.";
                 document.getElementById(‘bookingSection’).hidden      = true;
                 document.getElementById(‘confirmationSection’).hidden = false;
                 window.scrollTo({ top: 0, behavior: ‘smooth’ });

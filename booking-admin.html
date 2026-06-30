@@ -148,6 +148,23 @@
         .slot-card.taken .slot-status { color: #e07070; }
         .slot-card:not(.taken) .slot-status { opacity: 0.3; }
 
+        .book-btn {
+            font-family: 'Lato', sans-serif;
+            font-size: 0.6rem;
+            font-weight: 700;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: #fff;
+            background: none;
+            border: 1px solid #444;
+            padding: 6px 10px;
+            cursor: pointer;
+            transition: opacity 0.2s, border-color 0.2s;
+        }
+
+        .book-btn:hover { border-color: #fff; }
+        .book-btn:disabled { opacity: 0.3; cursor: default; }
+
         .unbook-btn {
             font-family: 'Lato', sans-serif;
             font-size: 0.6rem;
@@ -277,11 +294,37 @@
                 '<span class="slot-status">' + (isTaken ? 'Booked' : 'Free') + '</span>' +
                 (isTaken
                     ? '<button class="unbook-btn" onclick="unbook(this, \'' + slot + '\')">Unbook</button>'
-                    : '');
+                    : '<button class="book-btn" onclick="book(this, \'' + slot + '\')">Mark taken</button>');
             list.appendChild(card);
         });
 
         document.getElementById('statusMsg').textContent = booked.length + ' slot' + (booked.length === 1 ? '' : 's') + ' booked.';
+    }
+
+    async function book(btn, slot) {
+        btn.disabled = true;
+        btn.textContent = '…';
+        document.getElementById('statusMsg').textContent = '';
+
+        try {
+            const res = await fetch('/.netlify/functions/booked-slots', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ slot }),
+            });
+
+            if (res.ok) {
+                await loadSlots();
+            } else {
+                btn.disabled = false;
+                btn.textContent = 'Mark taken';
+                document.getElementById('statusMsg').textContent = 'Failed — try again.';
+            }
+        } catch {
+            btn.disabled = false;
+            btn.textContent = 'Mark taken';
+            document.getElementById('statusMsg').textContent = 'Failed — try again.';
+        }
     }
 
     async function unbook(btn, slot) {
