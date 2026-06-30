@@ -592,6 +592,12 @@
         </form>
     </section>
 
+    <!-- BOOKINGS CLOSED -->
+    <section class="confirmation-section" id="closedSection" hidden>
+        <h2>Bookings Closed</h2>
+        <p>Slots for <span id="closedDate"></span> are now full.<br>See you next time!</p>
+    </section>
+
     <!-- CONFIRMATION (hidden until submit succeeds) -->
     <section class="confirmation-section" id="confirmationSection" hidden>
         <h2>You're all set!</h2>
@@ -611,6 +617,8 @@
         eventDay:     "Saturday",                                // ← Edit: short day name for confirmation message
         eventAddress: "Shared on confirmation",                  // ← Edit: address / hint to show on page
         formspreeId:  "xjglrbdb",
+        bookedSlots:  [],                                        // ← Add taken slots here e.g. ["5:30pm", "6:00pm"]
+        bookingsClosed: false,                                   // ← Set to true on Saturday afternoon to close bookings
     };
     // ================================================================
 
@@ -636,6 +644,13 @@
     document.getElementById('headerSub').textContent   = 'Backyard Pizza Night · ' + CONFIG.eventDate;
     document.getElementById('eventAddress').textContent = CONFIG.eventAddress;
 
+    // Close bookings if the flag is set
+    if (CONFIG.bookingsClosed) {
+        document.getElementById('bookingSection').hidden = true;
+        document.getElementById('closedSection').hidden  = false;
+        document.getElementById('closedDate').textContent = CONFIG.eventDate;
+    }
+
     // Render slot grid
     const slotsGrid = document.getElementById('slotsGrid');
     SLOTS.forEach((slot, i) => {
@@ -648,9 +663,13 @@
         radio.id       = 'slot-' + i;
         radio.value    = slot;
 
+        const taken = CONFIG.bookedSlots.includes(slot);
+        if (taken) radio.disabled = true;
+
         const lbl      = document.createElement('label');
         lbl.htmlFor    = 'slot-' + i;
         lbl.textContent = slot;
+        if (taken) lbl.classList.add('slot-taken');
 
         item.appendChild(radio);
         item.appendChild(lbl);
@@ -660,20 +679,6 @@
             document.getElementById('slotError').hidden = true;
         });
     });
-
-    function markSlotTaken(slot) {
-        const radio = document.querySelector('input[name="arrival_time"][value="' + slot + '"]');
-        if (!radio) return;
-        radio.disabled = true;
-        radio.nextElementSibling.classList.add('slot-taken');
-        if (radio.checked) radio.checked = false;
-    }
-
-    // Fetch currently booked slots and mark them
-    fetch('/.netlify/functions/booked-slots')
-        .then(r => r.json())
-        .then(slots => slots.forEach(markSlotTaken))
-        .catch(() => { /* silently fail — all slots remain selectable */ });
 
     // Render menu
     const quantities = MENU.map(() => 0);
@@ -808,13 +813,6 @@
             });
 
             if (res.ok) {
-                // Register the slot as taken
-                fetch(‘/.netlify/functions/booked-slots’, {
-                    method: ‘POST’,
-                    headers: { ‘Content-Type’: ‘application/json’ },
-                    body: JSON.stringify({ slot: slotInput.value }),
-                }).catch(() => {});
-
                 document.getElementById(‘confTime’).textContent = slotInput.value;
                 document.getElementById(‘confMsg’).textContent  =
                     "You’re booked for " + slotInput.value + " — see you on " +
