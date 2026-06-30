@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book a Slot – Luali Backyard Pizza Night</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        html { scroll-behavior: smooth; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        body {
+            background: #0f0f0f;
+            color: #fff;
+            font-family: 'Lato', sans-serif;
+            font-weight: 300;
+        }
+
+        /* NAV */
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            padding: 20px;
+            background: rgba(15,15,15,0.97);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid #2a2a2a;
+        }
+        @media (max-width: 400px) { nav { gap: 16px; padding: 16px; } }
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            transition: opacity 0.3s ease;
+        }
+        nav a:hover { opacity: 0.4; }
+
+        /* HEADER */
+        header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 140px 20px 80px;
+            border-bottom: 1px solid #1a1a1a;
+        }
+        header .eyebrow {
+            font-size: 0.75rem;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: fadeUp 0.8s ease forwards 0.2s;
+        }
+        header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(36px, 8vw, 90px);
+            font-weight: 900;
+            line-height: 1.05;
+            opacity: 0;
+            animation: fadeUp 0.8s ease forwards 0.4s;
+        }
+        header .sub {
+            font-size: 0.8rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            margin-top: 24px;
+            opacity: 0;
+            animation: fadeUp 0.8s ease forwards 0.6s;
+        }
+
+        /* EVENT BAND */
+        .event-band {
+            background: #111;
+            text-align: center;
+            padding: 32px 20px;
+            border-bottom: 1px solid #2a2a2a;
+        }
+        .event-band .lbl {
+            font-size: 0.65rem;
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            opacity: 0.5;
+            margin-bottom: 10px;
+        }
+        .event-band .address {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(20px, 3.5vw, 32px);
+            font-style: italic;
+        }
+        .event-band .note {
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            opacity: 0.45;
+            margin-top: 8px;
+        }
+
+        /* BOOKING SECTION */
+        .booking-section {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 80px 40px 120px;
+        }
+        @media (max-width: 560px) { .booking-section { padding: 60px 24px 80px; } }
+
+        .section-label {
+            font-size: 0.7rem;
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            margin-bottom: 60px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #444;
+        }
+
+        /* STEPS */
+        .step { margin-bottom: 64px; }
+        .step-header {
+            display: flex;
+            align-items: baseline;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .step-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            font-style: italic;
+            opacity: 0.18;
+            line-height: 1;
+        }
+        .step-title {
+            font-size: 0.7rem;
+            letter-spacing: 0.45em;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        /* SLOT GRID */
+        .slot-note {
+            font-size: 0.72rem;
+            letter-spacing: 0.06em;
+            line-height: 1.8;
+            opacity: 0.5;
+            margin-bottom: 20px;
+        }
+        .slots-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        @media (min-width: 480px) {
+            .slots-grid { grid-template-columns: repeat(6, 1fr); }
+        }
+        .slot-item { position: relative; }
+        .slot-item input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 1px;
+            height: 1px;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+        }
+        .slot-item label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 4px;
+            border: 1px solid #444;
+            cursor: pointer;
+            font-size: 0.78rem;
+            letter-spacing: 0.02em;
+            text-align: center;
+            min-height: 48px;
+            transition: border-color 0.15s, background 0.15s, color 0.15s;
+            user-select: none;
+        }
+        .slot-item label:hover { border-color: #fff; }
+        .slot-item input[type="radio"]:checked + label {
+            background: #fff;
+            color: #111;
+            border-color: #fff;
+        }
+        .slot-item input[type="radio"]:focus-visible + label {
+            outline: 2px solid #fff;
+            outline-offset: 2px;
+        }
+
+        /* VALIDATION MESSAGES */
+        .val-msg {
+            font-size: 0.7rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #e07070;
+            margin-top: 12px;
+            line-height: 1.6;
+        }
+
+        /* FORM FIELDS */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px 40px;
+        }
+        @media (max-width: 500px) { .form-grid { grid-template-columns: 1fr; } }
+        .field { display: flex; flex-direction: column; }
+        .field.full { grid-column: 1 / -1; }
+        label {
+            font-size: 0.65rem;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        input[type="text"],
+        input[type="tel"],
+        input[type="email"],
+        input[type="number"],
+        textarea {
+            font-family: 'Lato', sans-serif;
+            font-weight: 300;
+            font-size: 1rem;
+            color: #fff;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid #555;
+            padding: 8px 0;
+            outline: none;
+            transition: border-color 0.3s ease;
+            width: 100%;
+            appearance: none;
+            -webkit-appearance: none;
+            border-radius: 0;
+        }
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+        input:focus, textarea:focus { border-bottom-color: #fff; }
+        input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.35); }
+        textarea { resize: vertical; min-height: 80px; }
+        .field-invalid { border-bottom-color: #e07070 !important; }
+
+        /* MENU */
+        .pizza-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 16px 0;
+            border-bottom: 1px solid #2a2a2a;
+        }
+        .pizza-row:first-child { border-top: 1px solid #2a2a2a; }
+        .pizza-name {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1rem, 2.8vw, 1.2rem);
+        }
+        .pizza-meta {
+            font-size: 0.7rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #aaa;
+            font-weight: 400;
+            margin-top: 3px;
+        }
+        .pizza-price-tag {
+            font-size: 0.72rem;
+            letter-spacing: 0.08em;
+            color: #666;
+            margin-top: 3px;
+        }
+        .qty-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+        .qty-btn {
+            background: none;
+            border: 1px solid #444;
+            width: 36px;
+            height: 36px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            line-height: 1;
+            font-family: inherit;
+            transition: border-color 0.15s;
+        }
+        .qty-btn:hover { border-color: #fff; }
+        .qty-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+        .qty-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            min-width: 20px;
+            text-align: center;
+        }
+        .order-total {
+            margin-top: 20px;
+            text-align: right;
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: #aaa;
+            min-height: 1.8em;
+        }
+        .order-total strong {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            font-style: italic;
+            color: #fff;
+        }
+
+        /* PAYMENT */
+        .payment-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .pay-item { position: relative; }
+        .pay-item input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 1px;
+            height: 1px;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+        }
+        .pay-item label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 18px 12px;
+            border: 1px solid #444;
+            cursor: pointer;
+            font-size: 0.72rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            font-weight: 700;
+            min-height: 56px;
+            line-height: 1.5;
+            transition: all 0.15s;
+            user-select: none;
+        }
+        .pay-item label:hover { border-color: #fff; }
+        .pay-item input[type="radio"]:checked + label {
+            background: #fff;
+            color: #111;
+            border-color: #fff;
+        }
+        .pay-item input[type="radio"]:focus-visible + label {
+            outline: 2px solid #fff;
+            outline-offset: 2px;
+        }
+        .card-note {
+            font-size: 0.72rem;
+            letter-spacing: 0.07em;
+            line-height: 1.8;
+            opacity: 0.5;
+            padding: 14px 0 4px;
+        }
+
+        /* SUBMIT */
+        .submit-wrap { margin-top: 48px; }
+        button[type="submit"] {
+            font-family: 'Lato', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            color: #111;
+            background: #fff;
+            border: none;
+            padding: 20px 48px;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+            width: 100%;
+        }
+        @media (min-width: 480px) { button[type="submit"] { width: auto; } }
+        button[type="submit"]:hover { opacity: 0.75; }
+        button[type="submit"]:disabled { opacity: 0.4; cursor: default; }
+
+        .form-error {
+            margin-top: 20px;
+            font-size: 0.72rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #e07070;
+            line-height: 1.8;
+        }
+
+        /* CONFIRMATION */
+        .confirmation-section {
+            text-align: center;
+            padding: 120px 40px 120px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .confirmation-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(32px, 6vw, 64px);
+            font-weight: 900;
+            margin-bottom: 24px;
+        }
+        .conf-time {
+            display: block;
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(24px, 5vw, 44px);
+            font-style: italic;
+            font-weight: 400;
+            margin: 16px 0 28px;
+        }
+        .confirmation-section p {
+            font-size: 0.8rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            opacity: 0.55;
+            line-height: 2.1;
+        }
+
+        /* FOOTER */
+        footer {
+            text-align: center;
+            padding: 32px;
+            font-size: 0.7rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            opacity: 0.4;
+            border-top: 1px solid #2a2a2a;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html#menu">Menu</a>
+        <a href="privateevents.html">Private Events</a>
+    </nav>
+
+    <header>
+        <p class="eyebrow">Luali Pizza</p>
+        <h1>Book a Slot</h1>
+        <p class="sub" id="headerSub">Backyard Pizza Night</p>
+    </header>
+
+    <div class="event-band">
+        <div class="lbl">One Night Only</div>
+        <div class="address" id="eventAddress"></div>
+        <div class="note">5:00pm – 8:00pm &middot; Pick your 10-minute arrival window</div>
+    </div>
+
+    <section class="booking-section" id="bookingSection">
+        <div class="section-label">Reserve your spot</div>
+
+        <form id="bookingForm" novalidate>
+
+            <!-- 01 · TIME SLOT -->
+            <div class="step">
+                <div class="step-header">
+                    <span class="step-num">01</span>
+                    <span class="step-title">Choose your arrival time</span>
+                </div>
+                <p class="slot-note">Pick the 10-minute window when your party will arrive. All slots are open to select — we'll confirm your booking by reply, not instantly.</p>
+                <fieldset style="border:0;padding:0;margin:0;">
+                    <legend class="sr-only">Arrival time</legend>
+                    <div class="slots-grid" id="slotsGrid"></div>
+                </fieldset>
+                <p class="val-msg" id="slotError" role="alert" aria-live="polite" hidden>Please choose an arrival time before continuing.</p>
+            </div>
+
+            <!-- 02 · YOUR DETAILS -->
+            <div class="step">
+                <div class="step-header">
+                    <span class="step-num">02</span>
+                    <span class="step-title">Your details</span>
+                </div>
+                <div class="form-grid">
+                    <div class="field">
+                        <label for="custName">Full Name</label>
+                        <input type="text" id="custName" name="name" placeholder="Jane Smith" required autocomplete="name">
+                    </div>
+                    <div class="field">
+                        <label for="custMobile">Mobile Number</label>
+                        <input type="tel" id="custMobile" name="mobile" placeholder="07xxx xxxxxx" required autocomplete="tel">
+                    </div>
+                    <div class="field">
+                        <label for="custEmail">Email Address</label>
+                        <input type="email" id="custEmail" name="email" placeholder="jane@example.com" required autocomplete="email">
+                    </div>
+                    <div class="field">
+                        <label for="partySize">Party Size</label>
+                        <input type="number" id="partySize" name="party_size" placeholder="2" min="1" max="6" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 03 · YOUR ORDER -->
+            <div class="step">
+                <div class="step-header">
+                    <span class="step-num">03</span>
+                    <span class="step-title">Your order</span>
+                </div>
+                <div id="menuList"></div>
+                <div class="order-total" id="orderTotal" aria-live="polite"></div>
+            </div>
+
+            <!-- 04 · PAYMENT -->
+            <div class="step">
+                <div class="step-header">
+                    <span class="step-num">04</span>
+                    <span class="step-title">Payment method</span>
+                </div>
+                <fieldset style="border:0;padding:0;margin:0;">
+                    <legend class="sr-only">Payment method</legend>
+                    <div class="payment-options">
+                        <div class="pay-item">
+                            <input type="radio" id="payCash" name="payment_method" value="Cash on arrival">
+                            <label for="payCash">Cash on Arrival</label>
+                        </div>
+                        <div class="pay-item">
+                            <input type="radio" id="payCard" name="payment_method" value="Card — payment link to follow">
+                            <label for="payCard">Card</label>
+                        </div>
+                    </div>
+                </fieldset>
+                <p class="card-note" id="cardNote" hidden>We'll send a payment link to your email and mobile ahead of the evening.</p>
+                <p class="val-msg" id="payError" role="alert" aria-live="polite" hidden>Please choose a payment method.</p>
+            </div>
+
+            <!-- 05 · NOTES -->
+            <div class="step" style="margin-bottom:0;">
+                <div class="step-header">
+                    <span class="step-num">05</span>
+                    <span class="step-title">Anything else?</span>
+                </div>
+                <div class="field">
+                    <label for="custNotes">Notes (optional)</label>
+                    <textarea id="custNotes" name="notes" placeholder="Dietary requirements, allergies, special requests…"></textarea>
+                </div>
+            </div>
+
+            <!-- Hidden fields for Formspree email -->
+            <input type="hidden" id="hiddenOrder"   name="order_summary">
+            <input type="hidden" id="hiddenTotal"   name="order_total">
+            <input type="hidden" id="hiddenSubject" name="_subject">
+            <input type="hidden" id="hiddenReplyTo" name="_replyto">
+
+            <div class="submit-wrap">
+                <button type="submit" id="submitBtn">Request Booking</button>
+                <p class="form-error" id="formError" role="alert" aria-live="polite" hidden>
+                    Something went wrong — please try again or message us on
+                    <a href="https://instagram.com/lualipizza" style="color:#e07070;">Instagram</a>.
+                </p>
+            </div>
+
+        </form>
+    </section>
+
+    <!-- CONFIRMATION (hidden until submit succeeds) -->
+    <section class="confirmation-section" id="confirmationSection" hidden>
+        <h2>You're all set!</h2>
+        <span class="conf-time" id="confTime"></span>
+        <p id="confMsg"></p>
+    </section>
+
+    <footer>&copy; 2026 Luali Pizza &middot; Chelmsford &amp; Braintree</footer>
+
+    <script>
+    // ================================================================
+    //  LUALI BACKYARD PIZZA NIGHT — BOOKING CONFIG
+    //  Edit the values below before going live.
+    // ================================================================
+    const CONFIG = {
+        eventDate:    "Saturday, 5 July",                        // ← Edit: shown in header and confirmation
+        eventDay:     "Saturday",                                // ← Edit: short day name for confirmation message
+        eventAddress: "Shared on confirmation",                  // ← Edit: address / hint to show on page
+        formspreeId:  "YOUR_FORM_ID",                           // ← PASTE YOUR FORMSPREE FORM ID HERE
+    };
+    // ================================================================
+
+    const MENU = [
+        // ← Edit names, ingredients, and prices here.
+        // ← Meat Feast price is set to 13 as a placeholder — update before going live.
+        { name: "Cheesy Garlic Bread", desc: "Mozzarella · Garlic Butter · Parsley",                       price:  9 },
+        { name: "Margherita",          desc: "Tomato · Mozzarella · Basil",                                 price: 10 },
+        { name: "Pepperoni",           desc: "Tomato · Mozzarella · Pepperoni",                             price: 11 },
+        { name: "Pesto Funghi",        desc: "Tomato · Mozzarella · Sautéed Mushroom · Pesto Oil",         price: 11 },
+        { name: "Ham & Mushroom",      desc: "Tomato · Mozzarella · Ham · Sautéed Mushroom",               price: 11 },
+        { name: "Meat Feast",          desc: "Tomato · Mozzarella · Pepperoni · Ham · Nduja",              price: 13 }, // ← SET PRICE
+    ];
+
+    const SLOTS = [
+        "5:00pm", "5:10pm", "5:20pm", "5:30pm", "5:40pm", "5:50pm",
+        "6:00pm", "6:10pm", "6:20pm", "6:30pm", "6:40pm", "6:50pm",
+        "7:00pm", "7:10pm", "7:20pm", "7:30pm", "7:40pm", "7:50pm",
+    ];
+
+    // ── INIT ──────────────────────────────────────────────────────────
+
+    document.getElementById('headerSub').textContent   = 'Backyard Pizza Night · ' + CONFIG.eventDate;
+    document.getElementById('eventAddress').textContent = CONFIG.eventAddress;
+
+    // Render slot grid
+    const slotsGrid = document.getElementById('slotsGrid');
+    SLOTS.forEach((slot, i) => {
+        const item  = document.createElement('div');
+        item.className = 'slot-item';
+
+        const radio    = document.createElement('input');
+        radio.type     = 'radio';
+        radio.name     = 'arrival_time';
+        radio.id       = 'slot-' + i;
+        radio.value    = slot;
+
+        const lbl      = document.createElement('label');
+        lbl.htmlFor    = 'slot-' + i;
+        lbl.textContent = slot;
+
+        item.appendChild(radio);
+        item.appendChild(lbl);
+        slotsGrid.appendChild(item);
+
+        radio.addEventListener('change', () => {
+            document.getElementById('slotError').hidden = true;
+        });
+    });
+
+    // Render menu
+    const quantities = MENU.map(() => 0);
+    const menuList   = document.getElementById('menuList');
+
+    MENU.forEach((item, i) => {
+        const row = document.createElement('div');
+        row.className = 'pizza-row';
+        row.innerHTML =
+            '<div>' +
+              '<div class="pizza-name">' + item.name + '</div>' +
+              '<div class="pizza-meta">' + item.desc + '</div>' +
+              '<div class="pizza-price-tag">&pound;' + item.price + '</div>' +
+            '</div>' +
+            '<div class="qty-control">' +
+              '<button type="button" class="qty-btn" data-i="' + i + '" data-delta="-1" aria-label="Remove one ' + item.name + '">&#8722;</button>' +
+              '<span class="qty-num" id="qty-' + i + '" aria-label="' + item.name + ' quantity">' + quantities[i] + '</span>' +
+              '<button type="button" class="qty-btn" data-i="' + i + '" data-delta="1" aria-label="Add one ' + item.name + '">+</button>' +
+            '</div>';
+        menuList.appendChild(row);
+    });
+
+    menuList.addEventListener('click', e => {
+        const btn = e.target.closest('.qty-btn');
+        if (!btn) return;
+        const i = parseInt(btn.dataset.i, 10);
+        quantities[i] = Math.max(0, quantities[i] + parseInt(btn.dataset.delta, 10));
+        document.getElementById('qty-' + i).textContent = quantities[i];
+        updateTotal();
+    });
+
+    function updateTotal() {
+        const total = MENU.reduce((sum, p, i) => sum + p.price * quantities[i], 0);
+        const count = quantities.reduce((a, b) => a + b, 0);
+        const el    = document.getElementById('orderTotal');
+        el.innerHTML = count > 0
+            ? 'Order total &nbsp;<strong>&pound;' + total + '</strong>'
+            : '';
+    }
+
+    // Card note toggle
+    document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            document.getElementById('cardNote').hidden =
+                (radio.value !== 'Card — payment link to follow');
+            document.getElementById('payError').hidden = true;
+        });
+    });
+
+    // Clear field-invalid on input
+    ['custName', 'custMobile', 'custEmail', 'partySize'].forEach(id => {
+        document.getElementById(id).addEventListener('input', function () {
+            this.classList.remove('field-invalid');
+        });
+    });
+
+    // ── SUBMIT ────────────────────────────────────────────────────────
+
+    document.getElementById('bookingForm').addEventListener('submit', async e => {
+        e.preventDefault();
+
+        let valid = true;
+        let firstErrorEl = null;
+
+        // Slot
+        const slotInput = document.querySelector('input[name="arrival_time"]:checked');
+        if (!slotInput) {
+            document.getElementById('slotError').hidden = false;
+            firstErrorEl = firstErrorEl || document.getElementById('slotsGrid');
+            valid = false;
+        }
+
+        // Text fields
+        const fieldIds = ['custName', 'custMobile', 'custEmail', 'partySize'];
+        fieldIds.forEach(id => {
+            const el = document.getElementById(id);
+            const empty = !el.value.trim();
+            if (empty) {
+                el.classList.add('field-invalid');
+                firstErrorEl = firstErrorEl || el;
+                valid = false;
+            }
+        });
+
+        // Party size range
+        const partySizeEl  = document.getElementById('partySize');
+        const partyNum     = parseInt(partySizeEl.value, 10);
+        if (partySizeEl.value.trim() && (isNaN(partyNum) || partyNum < 1 || partyNum > 6)) {
+            partySizeEl.classList.add('field-invalid');
+            firstErrorEl = firstErrorEl || partySizeEl;
+            valid = false;
+        }
+
+        // Payment
+        const payInput = document.querySelector('input[name="payment_method"]:checked');
+        if (!payInput) {
+            document.getElementById('payError').hidden = false;
+            firstErrorEl = firstErrorEl || document.querySelector('.payment-options');
+            valid = false;
+        }
+
+        if (!valid) {
+            if (firstErrorEl) {
+                firstErrorEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            return;
+        }
+
+        // Build order summary
+        const orderLines = MENU
+            .map((p, i) => quantities[i] > 0
+                ? quantities[i] + 'x ' + p.name + ' (£' + (p.price * quantities[i]) + ')'
+                : null)
+            .filter(Boolean);
+        const orderSummary = orderLines.length ? orderLines.join(', ') : 'No pre-order';
+        const grandTotal   = MENU.reduce((sum, p, i) => sum + p.price * quantities[i], 0);
+
+        // Populate hidden fields
+        document.getElementById('hiddenOrder').value   = orderSummary;
+        document.getElementById('hiddenTotal').value   = grandTotal > 0 ? '£' + grandTotal : '£0';
+        document.getElementById('hiddenSubject').value =
+            'New Booking · ' + CONFIG.eventDate + ' · ' + slotInput.value;
+        document.getElementById('hiddenReplyTo').value =
+            document.getElementById('custEmail').value.trim();
+
+        const btn = document.getElementById('submitBtn');
+        btn.disabled    = true;
+        btn.textContent = 'Sending…';
+        document.getElementById('formError').hidden = true;
+
+        try {
+            const res = await fetch('https://formspree.io/f/' + CONFIG.formspreeId, {
+                method:  'POST',
+                body:    new FormData(e.target),
+                headers: { 'Accept': 'application/json' },
+            });
+
+            if (res.ok) {
+                document.getElementById('confTime').textContent = slotInput.value;
+                document.getElementById('confMsg').textContent  =
+                    "You’re booked for " + slotInput.value + " — see you on " +
+                    CONFIG.eventDay + "! We’ll reply to confirm your slot shortly.";
+                document.getElementById('bookingSection').hidden      = true;
+                document.getElementById('confirmationSection').hidden = false;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                btn.disabled    = false;
+                btn.textContent = 'Request Booking';
+                document.getElementById('formError').hidden = false;
+            }
+        } catch {
+            btn.disabled    = false;
+            btn.textContent = 'Request Booking';
+            document.getElementById('formError').hidden = false;
+        }
+    });
+    </script>
+
+</body>
+</html>
