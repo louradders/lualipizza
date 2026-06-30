@@ -214,6 +214,13 @@
             outline: 2px solid #fff;
             outline-offset: 2px;
         }
+        .slot-item input[type="radio"]:disabled + label,
+        .slot-item label.slot-taken {
+            opacity: 0.25;
+            cursor: default;
+            text-decoration: line-through;
+            border-color: #333;
+        }
 
         /* VALIDATION MESSAGES */
         .val-msg {
@@ -604,6 +611,7 @@
         eventDay:     "Saturday",                                // ← Edit: short day name for confirmation message
         eventAddress: "Shared on confirmation",                  // ← Edit: address / hint to show on page
         formspreeId:  "xjglrbdb",
+        bookedSlots:  [],                                        // ← Add taken slots here, e.g. ["5:30pm", "6:00pm"]
     };
     // ================================================================
 
@@ -641,9 +649,13 @@
         radio.id       = 'slot-' + i;
         radio.value    = slot;
 
+        const taken = CONFIG.bookedSlots.includes(slot);
+        if (taken) radio.disabled = true;
+
         const lbl      = document.createElement('label');
         lbl.htmlFor    = 'slot-' + i;
         lbl.textContent = slot;
+        if (taken) lbl.classList.add('slot-taken');
 
         item.appendChild(radio);
         item.appendChild(lbl);
