@@ -611,7 +611,6 @@
         eventDay:     "Saturday",                                // ← Edit: short day name for confirmation message
         eventAddress: "Shared on confirmation",                  // ← Edit: address / hint to show on page
         formspreeId:  "xjglrbdb",
-        bookedSlots:  [],                                        // ← Add taken slots here, e.g. ["5:30pm", "6:00pm"]
     };
     // ================================================================
 
@@ -649,13 +648,9 @@
         radio.id       = 'slot-' + i;
         radio.value    = slot;
 
-        const taken = CONFIG.bookedSlots.includes(slot);
-        if (taken) radio.disabled = true;
-
         const lbl      = document.createElement('label');
         lbl.htmlFor    = 'slot-' + i;
         lbl.textContent = slot;
-        if (taken) lbl.classList.add('slot-taken');
 
         item.appendChild(radio);
         item.appendChild(lbl);
@@ -665,6 +660,20 @@
             document.getElementById('slotError').hidden = true;
         });
     });
+
+    function markSlotTaken(slot) {
+        const radio = document.querySelector('input[name="arrival_time"][value="' + slot + '"]');
+        if (!radio) return;
+        radio.disabled = true;
+        radio.nextElementSibling.classList.add('slot-taken');
+        if (radio.checked) radio.checked = false;
+    }
+
+    // Fetch currently booked slots and mark them
+    fetch('/.netlify/functions/booked-slots')
+        .then(r => r.json())
+        .then(slots => slots.forEach(markSlotTaken))
+        .catch(() => { /* silently fail — all slots remain selectable */ });
 
     // Render menu
     const quantities = MENU.map(() => 0);
@@ -799,13 +808,20 @@
             });
 
             if (res.ok) {
-                document.getElementById('confTime').textContent = slotInput.value;
-                document.getElementById('confMsg').textContent  =
+                // Register the slot as taken
+                fetch(‘/.netlify/functions/booked-slots’, {
+                    method: ‘POST’,
+                    headers: { ‘Content-Type’: ‘application/json’ },
+                    body: JSON.stringify({ slot: slotInput.value }),
+                }).catch(() => {});
+
+                document.getElementById(‘confTime’).textContent = slotInput.value;
+                document.getElementById(‘confMsg’).textContent  =
                     "You’re booked for " + slotInput.value + " — see you on " +
                     CONFIG.eventDay + "! We’ll reply to confirm your slot shortly.";
-                document.getElementById('bookingSection').hidden      = true;
-                document.getElementById('confirmationSection').hidden = false;
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                document.getElementById(‘bookingSection’).hidden      = true;
+                document.getElementById(‘confirmationSection’).hidden = false;
+                window.scrollTo({ top: 0, behavior: ‘smooth’ });
             } else {
                 btn.disabled    = false;
                 btn.textContent = 'Request Booking';
