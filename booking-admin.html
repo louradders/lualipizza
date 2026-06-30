@@ -289,8 +289,7 @@
             const res = await fetch('/.netlify/functions/booked-slots');
             data = await res.json();
         } catch {
-            document.getElementById('statusMsg').textContent = 'Could not load — check connection.';
-            return;
+            document.getElementById('statusMsg').textContent = 'Could not reach server — showing last known state.';
         }
 
         currentClosed = !!data.closed;
