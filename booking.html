@@ -515,20 +515,16 @@
                 </div>
                 <div class="form-grid">
                     <div class="field">
-                        <label for="custName">Full Name</label>
+                        <label for="custName">Name</label>
                         <input type="text" id="custName" name="name" placeholder="Jane Smith" required autocomplete="name">
                     </div>
                     <div class="field">
                         <label for="custMobile">Mobile Number</label>
                         <input type="tel" id="custMobile" name="mobile" placeholder="07xxx xxxxxx" required autocomplete="tel">
                     </div>
-                    <div class="field">
+                    <div class="field full">
                         <label for="custEmail">Email Address</label>
                         <input type="email" id="custEmail" name="email" placeholder="jane@example.com" required autocomplete="email">
-                    </div>
-                    <div class="field">
-                        <label for="partySize">Party Size</label>
-                        <input type="number" id="partySize" name="party_size" placeholder="2" min="1" max="6" required>
                     </div>
                 </div>
             </div>
@@ -577,12 +573,6 @@
                     <textarea id="custNotes" name="notes" placeholder="Dietary requirements, allergies, special requests…"></textarea>
                 </div>
             </div>
-
-            <!-- Hidden fields for Formspree email -->
-            <input type="hidden" id="hiddenOrder"   name="order_summary">
-            <input type="hidden" id="hiddenTotal"   name="order_total">
-            <input type="hidden" id="hiddenSubject" name="_subject">
-            <input type="hidden" id="hiddenReplyTo" name="_replyto">
 
             <div class="submit-wrap">
                 <button type="submit" id="submitBtn">Request Booking</button>
@@ -713,7 +703,7 @@
     });
 
     // Clear field-invalid on input
-    ['custName', 'custMobile', 'custEmail', 'partySize'].forEach(id => {
+    ['custName', 'custMobile', 'custEmail'].forEach(id => {
         document.getElementById(id).addEventListener('input', function () {
             this.classList.remove('field-invalid');
         });
@@ -736,8 +726,7 @@
         }
 
         // Text fields
-        const fieldIds = ['custName', 'custMobile', 'custEmail', 'partySize'];
-        fieldIds.forEach(id => {
+        ['custName', 'custMobile', 'custEmail'].forEach(id => {
             const el = document.getElementById(id);
             const empty = !el.value.trim();
             if (empty) {
@@ -746,15 +735,6 @@
                 valid = false;
             }
         });
-
-        // Party size range
-        const partySizeEl  = document.getElementById('partySize');
-        const partyNum     = parseInt(partySizeEl.value, 10);
-        if (partySizeEl.value.trim() && (isNaN(partyNum) || partyNum < 1 || partyNum > 6)) {
-            partySizeEl.classList.add('field-invalid');
-            firstErrorEl = firstErrorEl || partySizeEl;
-            valid = false;
-        }
 
         // Payment
         const payInput = document.querySelector('input[name="payment_method"]:checked');
@@ -779,14 +759,20 @@
             .filter(Boolean);
         const orderSummary = orderLines.length ? orderLines.join(', ') : 'No pre-order';
         const grandTotal   = MENU.reduce((sum, p, i) => sum + p.price * quantities[i], 0);
+        const email        = document.getElementById('custEmail').value.trim();
 
-        // Populate hidden fields
-        document.getElementById('hiddenOrder').value   = orderSummary;
-        document.getElementById('hiddenTotal').value   = grandTotal > 0 ? '£' + grandTotal : '£0';
-        document.getElementById('hiddenSubject').value =
-            'New Booking · ' + CONFIG.eventDate + ' · ' + slotInput.value;
-        document.getElementById('hiddenReplyTo').value =
-            document.getElementById('custEmail').value.trim();
+        const payload = {
+            name:           document.getElementById('custName').value.trim(),
+            mobile:         document.getElementById('custMobile').value.trim(),
+            email:          email,
+            arrival_time:   slotInput.value,
+            order_summary:  orderSummary,
+            order_total:    grandTotal > 0 ? '£' + grandTotal : '£0',
+            payment_method: payInput.value,
+            notes:          document.getElementById('custNotes').value.trim(),
+            _subject:       'New Booking · ' + CONFIG.eventDate + ' · ' + slotInput.value,
+            _replyto:       email,
+        };
 
         const btn = document.getElementById('submitBtn');
         btn.disabled    = true;
@@ -796,8 +782,8 @@
         try {
             const res = await fetch('https://formspree.io/f/' + CONFIG.formspreeId, {
                 method:  'POST',
-                body:    new FormData(e.target),
-                headers: { 'Accept': 'application/json' },
+                body:    JSON.stringify(payload),
+                headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
             });
 
             if (res.ok) {
